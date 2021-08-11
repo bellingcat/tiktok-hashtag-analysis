@@ -1,4 +1,4 @@
-# tiktok hashtag analysis toolset 
+# TikTok hashtag analysis toolset 
 The project provides tools to analyze hashtags based on data downloaded using tiktok-scraper (https://github.com/drawrowfly/tiktok-scraper).
 
 ## Pre-requisites
