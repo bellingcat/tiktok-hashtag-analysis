@@ -1,7 +1,7 @@
 # tiktok hashtag analysis toolset 
 The project provides tools to analyze hashtags based on data downloaded using tiktok-scraper (https://github.com/drawrowfly/tiktok-scraper).
 
-## Pre-conditions
+## Pre-requisites
 1. Download and install TikTok scraper: https://github.com/drawrowfly/tiktok-scraper
 2. Download posts relating to a hashtag in the **json** format. Example: tiktok-scraper hashtag tokyo2021 -t 'json'
 
