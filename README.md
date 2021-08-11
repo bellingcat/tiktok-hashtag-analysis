@@ -11,7 +11,7 @@ The project provides tools to analyze hashtags based on data downloaded using ti
 
 ## extract_hashtag.py
 1. Use the following command: python3 extract_hashtag.py target_file.json n
-2. The command above will plot top n hashtag frequencies based on the json file downloaded using tiktok scraper for a given hashtag. Recommendation n < = 10 for easy to read and analyze.
+2. The command above will plot top **n** hashtag frequencies based on the json file downloaded using tiktok scraper for a given hashtag. Recommendation n < = 10 for easy to read and analyze.
 
 ## extract_posts.py
 1. Use the following command: python3 extract_posts.py target_file.json hashtag_name
