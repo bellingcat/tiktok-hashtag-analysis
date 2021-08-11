@@ -10,7 +10,7 @@ The command in point 2 uses the extract_date.py script to extract the dates and 
 
 ## extract_hashtag.py
 1. Use the following command: python3 extract_hashtag.py target_file.json n
-2. It will plot top n hashtag frequencies. 
+2. It will plot top n hashtag frequencies. Recommendation n < = 10 for easy to read and analyze.
 
 ## extract_posts.py
 1. Use the following command: python3 extract_posts.py target_file.json hashtag
