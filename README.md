@@ -3,7 +3,7 @@ The project provides tools to analyze hashtags based on data downloaded using ti
 
 ## Pre-conditions
 1. Download and install TikTok scraper: https://github.com/drawrowfly/tiktok-scraper
-2. Download posts relating to a hashtag in the **json** format. Example: tiktok-scraper tokyo2021 -t 'json'
+2. Download posts relating to a hashtag in the **json** format. Example: tiktok-scraper hashtag tokyo2021 -t 'json'
 
 ## extract_date.py
 1. Use the following command: python3 extract_date.py target_file.json hashtag_name
