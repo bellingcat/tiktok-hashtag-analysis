@@ -1,4 +1,4 @@
-# TikTok_plotter 
+# tiktok hashtag analysis toolset 
 The project provides tools to analyze hashtags within posts scraped from TikTok.
 
 ## extract_date.py
