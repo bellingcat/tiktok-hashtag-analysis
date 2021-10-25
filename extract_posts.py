@@ -1,64 +1,49 @@
 import os, sys
-import csv, json
-import re
-from pandas import *
-
-def arg_check():
-    if len(sys.argv) != 3:
-        print(f'ERROR: Please make sure you enter the following in the command line: python3 extract_posts.py file.json hashtag')
-        sys.exit()
-    else:
-        return
-
-def get_hashtag_positions(file_name, hashtag):
-    base = os.path.splitext(file_name)[0]
-    path = f"./{base}_sorted_hashtags.csv"
-    if not os.path.exists(path):
-        print(f'Generating {path} ...')
-        os.system(f'python3 extract_hashtag.py {file_name} {1}')
-
-    return tag_membership(hashtag, path)
+from extract_hashtag import get_occurances
 
 
-def tag_membership(hashtag, path):
-    data = read_csv(path)
-    position_str = list(data[data["Name"] == hashtag].values[:, 2])
-    if position_str:
-        position_str = re.split('{|}', str(position_str))[1]
-        p = position_str.replace(";", ",")
-        positions = [int(s) for s in p.split(",")]
-        return positions
-    else:
-        return
+def filter_positions(hashtags, keys, positions):
+    filtered = []
+    for hashtag in hashtags:
+        try: 
+            i = keys.index(hashtag)
+            key = keys[i]
+            post_indices = positions[i][1]
+            filtered.append((key, post_indices))
+        except Exception as error:
+            print(error)
+            continue
+    return filtered
 
 
-def print_posts(file_name, path, hashtag, positions):
-    with open(file_name) as f:
-        data = json.load(f)
-        posts = []
-        for p in positions:
-            posts.append(data[p])
-        keys = posts[0].keys()
-        with open(path, 'w', newline='') as csv_file:
-            writer = csv.DictWriter(csv_file, keys)
-            writer.writeheader()
-            writer.writerows(posts)
-    print(f'The posts are contained in the file {path}.')
-    return
+def write_posts(path, obj, filtered):
+    length = len(filtered)
+    with open(path, "w") as output_file:
+        for i in range(length):
+            hashtag = filtered[i][0]
+            total_positions = len(filtered[i][1])
+            positions = list(filtered[i][1])
+            first_position = positions[0]
+            output_file.write(f"{hashtag}, {obj[first_position]}" + "\n")
+            for p in range(1, total_positions):
+                output_file.write(f" , {obj[positions[p]]}" + "\n")
+            print(f"{total_positions} posts written for the hashtag - {hashtag}")
 
 
 if __name__ == "__main__":
-    arg_check()
     file_name = sys.argv[1]
-    hashtag = sys.argv[2]
-    path = f"./{hashtag}_posts.csv"
+    hashtags = list(sys.argv[2:])
+    name = f"{hashtags[0]}_{len(hashtags)}"
+    path = f"../{name}_posts.csv"
     if os.path.exists(path):
         print(f'The file {path} containing hashtag occurances already exists. If you would like to run the script afresh, please delete the file {path} and re-run the script.')
         sys.exit()
     else:
-        positions = get_hashtag_positions(file_name, hashtag)
-        if positions:
-            print_posts(file_name, path, hashtag, positions)
+        obj, keys, positions = get_occurances(file_name, sort=False)
+        filtered = filter_positions(hashtags, keys, positions)
+        if filtered:
+            write_posts(path, obj, filtered)
         else:
-            print(f'{hashtag} not found!!!!')
-            sys.exit()
+            print(f"No posts found for the hashtags you entered.")
+        
+
