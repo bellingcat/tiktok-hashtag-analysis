@@ -33,12 +33,8 @@ FILES = {
 tag = ""
 
 PARAMETERS = {
-            "scraper_attempts" : 3,
+#            "scraper_attempts" : 3,
 #            "number_of_videos" : 3, # Number of videos to be downloaded by tiktok-scraper.
-}
-COMMANDS = {
-    "number_of_videos" : 3, # Number of videos to be downloaded by tiktok-scraper.
-    "post_download" : f"tiktok-scraper hashtag {tag} -t 'json'",
-    "video_download" : f"tiktok-scraper hashtag {tag} -d",
-    "sleep" : 8
+            "sleep" : 8
         }
+

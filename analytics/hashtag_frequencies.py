@@ -55,15 +55,6 @@ def plot(n, length, k, v, img_folder):
     plt.ylabel(f'Number of occurrences')
     save_plot(plt, img_folder)
     plt.show(block=None)
-
-
-def plot(n, length, k, v):
-    plt.scatter(k, v)
-    plt.tight_layout()
-    plt.title(f'Hashtag Distribution')
-    plt.xlabel(f'Top {n} hashtags from {length} posts.')
-    plt.ylabel(f'Number of occurrences')
-    plt.show()
     return
 
 
@@ -94,8 +85,6 @@ def save_plot(plt, img_folder):
 if __name__ == "__main__":
     img_folder = global_data.IMAGES
     file_methods.check_file(img_folder, "dir")
-
-if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("input_file", help="The json hashtag file name")
     parser.add_argument("n", help="The number of top n occurrences", type=int)
@@ -112,7 +101,6 @@ if __name__ == "__main__":
         if args.plot:
             length, keys, values = get_occurrences(args.input_file, args.n)
             plot(args.n, length, keys, values, img_folder)
-            plot(args.n, length, keys, values)
         else:
             length, keys, values = get_occurrences(args.input_file, args.n)
             print_occurrences(length, keys, values)

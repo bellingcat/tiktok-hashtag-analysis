@@ -2,7 +2,6 @@ import os, sys
 import time
 import json
 import argparse, importlib
-import argparse
 
 import global_data
 import file_methods
@@ -20,13 +19,6 @@ def get_hashtag_list(file_name):
     except ImportError as error:
         print("ImportError: " + str(error))
         print(f"Please provide at least one hashtag either by entering as an argument or by adding hashtags to the variable hashtag_list in the file {file_name}")
-def get_hashtag_list():
-    try:
-        from hashtag_list import hashtag_list
-        return hashtag_list
-    except ImportError as error:
-        print("ImportError: " + str(error))
-        print(f"Please provide at least one hashtag either by entering as an argument or by adding hashtags to the list hashtag_list in the file hashtag_list.py")
         sys.exit()
 
 
@@ -52,20 +44,17 @@ def set_download_settings(download_data_type):
     settings["logger"] = global_data.FILES["logger"]
     settings["sleep"] = global_data.PARAMETERS["sleep"]
     settings["scraper"] = global_data.PARAMETERS["scraper_attempts"]
-    settings["sleep"] = global_data.COMMANDS["sleep"]
     file_methods.check_file(f"{settings['data']}/{settings['ids']}", "dir")
     file_methods.check_file(f"{settings['data']}/{settings['log']}", "dir")
     if download_data_type == "posts":
         settings["posts"] = global_data.FILES["posts"]
         settings["post_ids"] = global_data.FILES["post_ids"]
-        settings["post_download"] = global_data.COMMANDS["post_download"]
         settings["data_file"] = global_data.FILES["data_file"]
         return settings
     elif download_data_type == "videos":
         settings["videos"] = global_data.FILES["videos"]
         settings["video_ids"] = global_data.FILES["video_ids"]
-        settings["video_download"] = global_data.COMMANDS["video_download"]
-        settings["number_of_videos"] = global_data.COMMANDS["number_of_videos"]
+        settings["number_of_videos"] = global_data.PARAMETERS["number_of_videos"]
         return settings
     elif download_data_type == "posts-videos":
         settings["posts"] = global_data.FILES["posts"]
@@ -73,11 +62,7 @@ def set_download_settings(download_data_type):
         settings["data_file"] = global_data.FILES["data_file"]
         settings["videos"] = global_data.FILES["videos"]
         settings["video_ids"] = global_data.FILES["video_ids"]
-        settings["post_download"] = global_data.COMMANDS["post_download"]
-        settings["videos"] = global_data.FILES["videos"]
-        settings["video_ids"] = global_data.FILES["video_ids"]
-        settings["video_download"] = global_data.COMMANDS["video_download"]
-        settings["number_of_videos"] = global_data.COMMANDS["number_of_videos"]
+        settings["number_of_videos"] = global_data.PARAMETERS["number_of_videos"]
         return settings
     else:
         print(f"ERROR: The download_data_type must be either posts, videos or posts-videos.")
@@ -109,6 +94,7 @@ def get_videos(settings, tag):
             log = data_methods.update_videos(settings, new_data, tag)
         else:
             file_methods.clean_video_files(settings, tag)
+
     return log
 
 
@@ -213,21 +199,6 @@ if __name__ == "__main__":
     if not hashtags:
         print("No hashtags were given, please use either --h option or -f to provide hashtags.")
         sys.exit(0)
-    if not (args.p or args.v):
-        parser.error("No argument given, please specify either -p for posts or -v videos or both.")
-        sys.exit()
-    
-    if args.h:
-        hashtags = args.h
-    else:
-        hashtags = get_hashtags("hashtag_list", "hashtag_list")
-
-    print(hashtags)
-    if not hashtags:
-        hashtags = get_hashtag_list()
-        if not hashtags:
-            print(f"ERROR: No hashtags found. Please re-run the script with at least one hashtag!!!")
-            sys.exit(0)
 
     if (args.p and args.v):
         download_data_type = "posts-videos"

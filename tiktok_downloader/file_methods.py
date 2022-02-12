@@ -66,7 +66,6 @@ def download_videos(settings, tag):
     try:
         # tiktok_command = f"tiktok-scraper hashtag {tag} -n {settings['number_of_videos']} -d" 
         tiktok_command = f"tiktok-scraper hashtag {tag} -d" 
-        tiktok_command = f"tiktok-scraper hashtag {tag} -n {settings['number_of_videos']} -d" 
         result = subprocess.run([tiktok_command], capture_output=True, shell=True)
         if result.stdout:
             downloaded_list_tmp = os.listdir(f"./#{tag}")
