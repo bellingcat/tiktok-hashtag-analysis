@@ -2,13 +2,10 @@ import os, sys
 import csv, json
 import argparse
 import matplotlib.pyplot as plt
-<<<<<<< HEAD
 from datetime import datetime
 
 sys.path.insert(0, '../tiktok_downloader')
 import file_methods, global_data
-=======
->>>>>>> bfa90676f121dd88e070dc134791a596a104e784
 
 
 
@@ -49,7 +46,6 @@ def get_occurrences(filename, n=1 , sort=True):
 
 
 
-<<<<<<< HEAD
 def plot(n, length, k, v, img_folder):
     plt.scatter(k, v)
     plt.tight_layout()
@@ -59,7 +55,8 @@ def plot(n, length, k, v, img_folder):
     plt.ylabel(f'Number of occurrences')
     save_plot(plt, img_folder)
     plt.show(block=None)
-=======
+
+
 def plot(n, length, k, v):
     plt.scatter(k, v)
     plt.tight_layout()
@@ -67,7 +64,6 @@ def plot(n, length, k, v):
     plt.xlabel(f'Top {n} hashtags from {length} posts.')
     plt.ylabel(f'Number of occurrences')
     plt.show()
->>>>>>> bfa90676f121dd88e070dc134791a596a104e784
     return
 
 
@@ -84,7 +80,6 @@ def print_occurrences(l, k, v):
     return
 
 
-<<<<<<< HEAD
 def save_plot(plt, img_folder):
     try:
         now = datetime.now()
@@ -99,10 +94,8 @@ def save_plot(plt, img_folder):
 if __name__ == "__main__":
     img_folder = global_data.IMAGES
     file_methods.check_file(img_folder, "dir")
-=======
 
 if __name__ == "__main__":
->>>>>>> bfa90676f121dd88e070dc134791a596a104e784
     parser = argparse.ArgumentParser()
     parser.add_argument("input_file", help="The json hashtag file name")
     parser.add_argument("n", help="The number of top n occurrences", type=int)
@@ -118,11 +111,8 @@ if __name__ == "__main__":
         path = f"./{base}_sorted_hashtags.csv"
         if args.plot:
             length, keys, values = get_occurrences(args.input_file, args.n)
-<<<<<<< HEAD
             plot(args.n, length, keys, values, img_folder)
-=======
             plot(args.n, length, keys, values)
->>>>>>> bfa90676f121dd88e070dc134791a596a104e784
         else:
             length, keys, values = get_occurrences(args.input_file, args.n)
             print_occurrences(length, keys, values)
