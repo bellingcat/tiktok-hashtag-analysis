@@ -9,6 +9,8 @@ The tool helps to download posts and videos from tiktok for a given set of hasht
 
 <img width="686" alt="Screenshot 2022-02-25 at 19 04 26" src="https://user-images.githubusercontent.com/72805812/155765360-47f0956c-220a-4098-8d52-1304a9f11e69.png">
 
+
+
 ### Data organization
 
 <img width="488" alt="Screenshot 2022-02-25 at 19 21 44" src="https://user-images.githubusercontent.com/72805812/155767522-94bd3774-60eb-45fc-8129-b2abc59c6089.png">
@@ -20,8 +22,28 @@ The tool helps to download posts and videos from tiktok for a given set of hasht
 
 
 
+### Post download 
+Run the run_downloader.py with the following option:
+         <code> python3 run_downloader.py --h london paris newyork -p </code>
+
 <img width="1301" alt="Screenshot 2022-02-25 at 19 14 06" src="https://user-images.githubusercontent.com/72805812/155766542-7de77313-6389-4ea2-aca5-b5f39fd70160.png">
 
-### Post download example
-Run the run_downloader.py with the following option:
-         python3 run_downloader.py --h london paris newyork -p
+1. The --h option allows to type in hashtag list in the commandline.
+2. -p option specifies the download posts option.
+
+
+### Video download 
+<code> python3 run_downloader.py --h london -v</code>
+
+The above code download all the trending videos for the hashtag london. Note that video downloading is a time and data rate consuming task, as a result we strongly recommend to use one hashtag at a time so as to avoid complications.
+
+
+### Top n hashtag occurrences 
+In the analytics folder, the file <code>hashtag_frequencies.py</code> will plot the frequencies of top occurring hashtags in a given set of posts.
+Assume we want to plot the graph of top 20 occurring hashtags in the downloaded posts of the hashtag london.
+
+1. Run the command: <code> python3 hashtag_frequencies.py -p ../data/london/posts/data.json 20 -v</code>
+
+<img width="1390" alt="Screenshot 2022-02-25 at 19 45 40" src="https://user-images.githubusercontent.com/72805812/155770710-0d167bbb-4c44-44d2-ba1c-fa57026afea8.png">
+
+The figure above shows the top 20 occurring hashtags among all the posts downloaded for the hashtag london. Clearly, the highest occurrence will be of the hashtag london as the file <code>data/london/posts/data.json</code> contain all the posts with hashtag london.
