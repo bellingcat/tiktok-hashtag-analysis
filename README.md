@@ -35,6 +35,8 @@ Run the run_downloader.py with the following option:
 ### Video download 
 <code> python3 run_downloader.py --h london -v</code>
 
+1. --h option allows to type in the list of hashtags as command line argument.
+2. -v option is for downloading the videos
 The above code download all the trending videos for the hashtag london. Note that video downloading is a time and data rate consuming task, as a result we strongly recommend to use one hashtag at a time so as to avoid complications.
 
 
@@ -50,5 +52,7 @@ The figure above shows the top 20 occurring hashtags among all the posts downloa
 
 2. Printing the result in the shell: <code> python3 hashtag_frequencies.py -d ../data/london/posts/data.json 20 -v</code>
 <img width="807" alt="Screenshot 2022-02-25 at 19 54 09" src="https://user-images.githubusercontent.com/72805812/155771757-e71b2858-cd9c-4496-8cc5-76146e8a8d32.png">
+
+The same result of 1 is printed in the shell. The last column shows the ratio of the occurrence to the total posts.
 
 
