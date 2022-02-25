@@ -1,3 +1,8 @@
+"""
+Contains global constants relating to paths and operational parameters such as sleep time between consecutive tiktok-scraper calls.
+"""
+
+
 # Directories
 DATA = "../data"
 IDS = "ids"
@@ -37,4 +42,3 @@ PARAMETERS = {
 #            "number_of_videos" : 3, # Number of videos to be downloaded by tiktok-scraper.
             "sleep" : 8
         }
-

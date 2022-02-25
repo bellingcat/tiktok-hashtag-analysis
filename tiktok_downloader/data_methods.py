@@ -4,12 +4,20 @@ from datetime import datetime
 import global_data
 import file_methods
 
+"""
+The file contains several functions that perform data processing related tasks.
+"""
+
 
 Difference = namedtuple("Difference", "new_ids size")
 Total = namedtuple("Total", "total unique")
 
 
 def get_difference(tag, file, ids):
+    """
+    Compares two sets of ids and returns the difference of the two sets.
+    Purpose - user to filter out the new ids by comparing the set of id list (ids/post_ids.json or videos_ids.json) and the list of newly downloaded ids.
+    """
     maiden_entry = False
     current_id_data = file_methods.get_data(file)
     if tag in current_id_data:
@@ -30,6 +38,9 @@ def get_difference(tag, file, ids):
 
 
 def extract_posts(settings, file_name, tag):
+    """
+    Takes the downloaded file by the tiktok-scraper that contains the posts, and returns the new posts after comparing it the list of posts (from the file ids/post_ids.json) already downloaded.
+    """
     ids = []
     posts = []
     new_posts = []
@@ -40,7 +51,7 @@ def extract_posts(settings, file_name, tag):
     if not ids:
         print(f"WARNING: no posts were found for {tag} in the file - {file_name}")
         return
-   
+
     status = file_methods.check_existence(settings["post_ids"], "file")
     if not status:
         new_data = (ids, posts)
@@ -64,6 +75,9 @@ def extract_posts(settings, file_name, tag):
 
 
 def extract_videos(settings, tag, download_list):
+    """
+    Tiktok-scraper downloads the videos and puts them in a folder - the list of ids of the downloaded videos is fed to this function as download_list. The function returns the set of new videos after comparing it the list of videos (from the file ids/videos_ids.json) already downloaded.
+    """
     status = file_methods.check_existence(settings["video_ids"], "file")
     if not status:
         new_data = download_list
@@ -82,6 +96,9 @@ def extract_videos(settings, tag, download_list):
 
 
 def update_posts(file_path, file_type, new_data, tag=None):
+    """
+    Updates the list of post ids (in the file ids/post_ids.json) with the ids of the new posts.
+    """
     try:
         status = file_methods.check_existence(file_path, file_type)
         if not tag:
@@ -94,6 +111,9 @@ def update_posts(file_path, file_type, new_data, tag=None):
 
 
 def update_videos(settings, new_data, tag):
+    """
+    Updates the list of video ids (in the file ids/video_ids.json) with the ids of the new videos.
+    """
     file_path = settings["video_ids"]
     file_methods.check_file(file_path, "file")
     log = file_methods.id_writer(file_path, new_data, tag, True)
@@ -102,6 +122,9 @@ def update_videos(settings, new_data, tag):
 
 
 def get_total_posts(file_path, tag):
+    """
+    Returns total count of ids in a id list along with the number of unique ids among them.
+    """
     status = file_methods.check_existence(file_path, "file")
     if not status:
         raise OSError("{file_path} not found!")
@@ -114,6 +137,9 @@ def get_total_posts(file_path, tag):
 
 
 def print_total(file_path, tag, data_type):
+    """
+    Prints the total count for posts or videos for a hashtag. Calls the function get_total_posts for sanity check that there are no repeating ids in the id lists.
+    """
     total = get_total_posts(file_path, tag)
     if (total.total == total.unique):
         print(f"Total {data_type} for the hashtag {tag} are: {total.total}")
@@ -121,5 +147,3 @@ def print_total(file_path, tag, data_type):
     else:
         print(f"WARNING: out of total {data_type} for the hashtag {tag} {total.total}, only {total.unique} are unique. Something is going wrong...")
         return
-
-
