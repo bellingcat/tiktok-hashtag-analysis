@@ -42,8 +42,12 @@ The above code download all the trending videos for the hashtag london. Note tha
 In the analytics folder, the file <code>hashtag_frequencies.py</code> will plot the frequencies of top occurring hashtags in a given set of posts.
 Assume we want to plot the graph of top 20 occurring hashtags in the downloaded posts of the hashtag london.
 
-1. Run the command: <code> python3 hashtag_frequencies.py -p ../data/london/posts/data.json 20 -v</code>
+1. Plotting the saving the image as a png file: <code> python3 hashtag_frequencies.py -p ../data/london/posts/data.json 20 -v</code>
 
 <img width="1390" alt="Screenshot 2022-02-25 at 19 45 40" src="https://user-images.githubusercontent.com/72805812/155770710-0d167bbb-4c44-44d2-ba1c-fa57026afea8.png">
 
 The figure above shows the top 20 occurring hashtags among all the posts downloaded for the hashtag london. Clearly, the highest occurrence will be of the hashtag london as the file <code>data/london/posts/data.json</code> contain all the posts with hashtag london.
+
+2. Printing the result in the shell: <code> python3 hashtag_frequencies.py -d ../data/london/posts/data.json 20 -v</code>
+<img width="724" alt="Screenshot 2021-12-09 at 21 27 46" src="https://user-images.githubusercontent.com/72805812/155771283-5875aec9-e829-4b55-b9f9-832183863604.png">
+
