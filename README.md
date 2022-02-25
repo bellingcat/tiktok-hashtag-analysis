@@ -1,19 +1,15 @@
 # TikTok hashtag analysis toolset 
-The project provides tools to analyze hashtags based on data downloaded using tiktok-scraper (https://github.com/drawrowfly/tiktok-scraper).
+The tool helps to download posts and videos from tiktok for a given set of hashtags. It uses tiktok-scraper (https://github.com/drawrowfly/tiktok-scraper) to download the posts and videos.
 
 ## Pre-requisites
-1. Download and install TikTok scraper: https://github.com/drawrowfly/tiktok-scraper
-2. Download posts relating to a hashtag in the **json** format. Example: tiktok-scraper hashtag tokyo2021 -t 'json'
+1. Make sure you have python 3.8 or later version installed.
+2. Download and install TikTok scraper: https://github.com/drawrowfly/tiktok-scraper 
 
-## extract_date.py
-1. Use the following command: python3 extract_date.py target_file.json hashtag_name
-2. The command above uses the extract_date.py script to extract the dates and the corresponding number of hashtag posts for each date that the TikTok scraper retrieves in the '.json' file.
+### Options for running run_downloader.py
 
-## extract_hashtag.py
-1. Use the following command to print the result on the screen: python3 extract_hashtag.py target_file.json n -d
-2. Use the following command to plot: python3 extract_hashtag.py target_file.json n -p
-3. The command above will plot top **n** hashtag frequencies based on the json file downloaded using tiktok scraper for a given hashtag. Recommendation n < = 10 for easy to read and analyze.
+<img width="686" alt="Screenshot 2022-02-25 at 19 04 26" src="https://user-images.githubusercontent.com/72805812/155765360-47f0956c-220a-4098-8d52-1304a9f11e69.png">
 
-## extract_posts.py
-1. Use the following command: python3 extract_posts.py target_file.json hashtag_names
-2. The command above pulls out all the posts for the hashtag hashtag_names (enter multiple names with space) from the downloaded tiktok scraper data. 
+
+### Post download example
+Run the run_downloader.py with the following option:
+         python3 run_downloader.py --h london paris newyork -p
