@@ -49,5 +49,6 @@ Assume we want to plot the graph of top 20 occurring hashtags in the downloaded 
 The figure above shows the top 20 occurring hashtags among all the posts downloaded for the hashtag london. Clearly, the highest occurrence will be of the hashtag london as the file <code>data/london/posts/data.json</code> contain all the posts with hashtag london.
 
 2. Printing the result in the shell: <code> python3 hashtag_frequencies.py -d ../data/london/posts/data.json 20 -v</code>
-<img width="724" alt="Screenshot 2021-12-09 at 21 27 46" src="https://user-images.githubusercontent.com/72805812/155771283-5875aec9-e829-4b55-b9f9-832183863604.png">
+<img width="807" alt="Screenshot 2022-02-25 at 19 54 09" src="https://user-images.githubusercontent.com/72805812/155771757-e71b2858-cd9c-4496-8cc5-76146e8a8d32.png">
+
 
