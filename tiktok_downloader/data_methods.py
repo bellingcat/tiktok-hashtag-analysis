@@ -9,8 +9,8 @@ The file contains several functions that perform data processing related tasks.
 """
 
 
-Difference = namedtuple("Difference", "new_ids size")
-Total = namedtuple("Total", "total unique")
+difference = namedtuple("difference", "new_ids size")
+total = namedtuple("total", "total unique")
 
 
 def get_difference(tag, file, ids):
@@ -28,7 +28,7 @@ def get_difference(tag, file, ids):
         if new_ids:
             new_ids = list(new_ids)
             size = len(new_ids)
-            diff = Difference(new_ids, size)
+            diff = difference(new_ids, size)
             return (diff, maiden_entry)
         else:
             return ([], maiden_entry)
@@ -51,7 +51,7 @@ def extract_posts(settings, file_name, tag):
     if not ids:
         print(f"WARNING: no posts were found for {tag} in the file - {file_name}")
         return
-
+   
     status = file_methods.check_existence(settings["post_ids"], "file")
     if not status:
         new_data = (ids, posts)
@@ -63,10 +63,7 @@ def extract_posts(settings, file_name, tag):
             return new_data
         else:
             if res[0]:
-                for i in res[0].new_ids:
-                    for post in posts:
-                        if (i == post["id"]):
-                            new_posts.append(post)
+                new_posts = [ post for post in posts if posts['id'] in res[0].new_ids ]
                 new_data = (res[0].new_ids, new_posts)
                 return new_data
             else:
@@ -130,10 +127,10 @@ def get_total_posts(file_path, tag):
         raise OSError("{file_path} not found!")
     else:
         data = file_methods.get_data(file_path)
-        total = len(data[tag])
+        total_posts = len(data[tag])
         unique = len(set(data[tag]))
-        total = Total(total, unique)
-        return total
+        t = total(total_posts, unique)
+        return t
 
 
 def print_total(file_path, tag, data_type):
