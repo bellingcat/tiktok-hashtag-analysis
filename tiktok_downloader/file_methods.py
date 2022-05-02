@@ -2,7 +2,6 @@ import os, json, subprocess
 from datetime import datetime
 import global_data
 import shutil
-#import data_methods
 
 
 """
