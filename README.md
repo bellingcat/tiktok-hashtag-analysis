@@ -2,7 +2,7 @@
 The tool helps to download posts and videos from tiktok for a given set of hashtags. It uses tiktok-scraper (https://github.com/drawrowfly/tiktok-scraper) to download the posts and videos.
 
 ## Pre-requisites
-1. Make sure you have python 3.8 or later version installed.
+1. Make sure you have python 3.6 or later version installed.
 2. Download and install TikTok scraper: https://github.com/drawrowfly/tiktok-scraper 
 
 ### Options for running run_downloader.py
@@ -15,6 +15,8 @@ The tool helps to download posts and videos from tiktok for a given set of hasht
 
 
 ### Data organization
+
+<code> tree ../data </code>
 
 <img width="488" alt="Screenshot 2022-02-25 at 19 21 44" src="https://user-images.githubusercontent.com/72805812/155767522-94bd3774-60eb-45fc-8129-b2abc59c6089.png">
 
