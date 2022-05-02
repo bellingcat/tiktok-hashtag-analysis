@@ -20,72 +20,63 @@ def get_hashtags(obj):
         return
     else:
         hashtags = {}
-        l = len(obj)
-        for i in range(l):
-            for hashtag in obj[i]['hashtags']:
-                if hashtag['name'] in hashtags:
-                    hashtags[hashtag['name']].add(i)
-                else:
-                    hashtags[hashtag['name']] = {i}
-    return hashtags
+        tags = [ [tag['name'] for tag in ele['hashtags']] for ele in obj ]
+        tags = [ set(ele) for ele in tags ]
+        { tag: (1 if tag not in hashtags and not hashtags.update({tag: 1})
+            else hashtags[tag] + 1 and not hashtags.update({tag: hashtags[tag] + 1})) 
+            for ele in tags for tag in ele }
+        hashtags = sorted(hashtags.items(), key=lambda e: e[1], reverse=True)
+
+        return hashtags
 
 
 def get_occurrences(filename, n=1 , sort=True):
     """
-    Takes the json file containing posts and returns the triplet:
-    l : total posts in the file
-    k : list of top n hashtags
-    v_total : frequency of top n hashtags in l
+    Takes the json file containing posts and returns a dictionary:
+    local variable occs = {
+        "total": total posts in the file,
+        top_n: [[top n hashtags ], [frequencies of corresponding hashtags]]
+    }
     """
     with open(filename) as f:
         obj = json.load(f)
         l = len(obj)
         tags = get_hashtags(obj)
-        tags = {key: (len(value), value) for (key, value) in tags.items()}
-        if not sort:
-            k = list(tags.keys())
-            v = list(tags.values())
-            return obj, k, v
-        else:
-            sorted_tags = {k: v for k,v in sorted(tags.items(), key=lambda item: item[1], reverse=True)}
-            k = list(sorted_tags.keys())
-            v = list(sorted_tags.values())
-            k = k[:n]
-            v_total = [i[0] for i in v]
-            v_total = v_total[:n]
-            return l, k, v_total
+        occs = {
+                "total": l,
+                "top_n": []
+                }
+        occs["top_n"] = [ [ ele[i] for ele in tags[0:n] ] for i in range(2)]
+        return occs
 
 
-
-def plot(n, length, k, v, img_folder):
-    plt.scatter(k, v)
+def plot(n, occs, img_folder):
+    plt.scatter(occs["top_n"][0], occs["top_n"][1])
     plt.tight_layout()
     plt.xticks(rotation=45)
     plt.title(f'Hashtag Distribution')
-    plt.xlabel(f'Top {n} hashtags from {length} posts.')
+    plt.xlabel(f'Top {n} hashtags from {occs["total"]} posts.')
     plt.ylabel(f'Number of occurrences')
-    save_plot(plt, img_folder)
+    save_plot(img_folder)
     plt.show(block=None)
     return
 
 
-def print_occurrences(l, k, v):
+def print_occurrences(occs):
     """
     Prints the top n hashtags with their frequencies and the ratio of occurrences and total posts, all to the shell.
     """
     row_number = 0
-    total_posts = l
-    print ("{:<8} {:<15} {:<15} {:<15}".format("Rank", 'Hashtag','Occurrences',f'Frequency (Occurrences/Total-Posts({l}))'))
-    #print(f'Hashtag                  Occurrences                 Frequency(Occurances/Total-Posts)')
-    for key,value in zip(k, v):
-        ratio = value/total_posts
+    total_posts = occs["total"]
+    print ("{:<8} {:<15} {:<15} {:<15}".format("Rank", 'Hashtag','Occurrences',f'Frequency (Occurrences/Total-Posts(total_posts))'))
+    for key,value in zip(occs["top_n"][0], occs["top_n"][1]):
+        ratio = value/total_posts 
         print ("{:<8} {:<15} {:<15} {:<15}".format(row_number, key, value, ratio))
-        #print(f'{row_number}\t{key}\t\t{value}\t\t{ratio:.3f}')
         row_number += 1
     return
 
 
-def save_plot(plt, img_folder):
+def save_plot(img_folder):
     """
     Saves the plot to a png file in the folder /data/imgs/
     """
@@ -123,10 +114,10 @@ if __name__ == "__main__":
         base = os.path.splitext(args.input_file)[0]
         path = f"./{base}_sorted_hashtags.csv"
         if args.plot:
-            length, keys, values = get_occurrences(args.input_file, args.n)
-            plot(args.n, length, keys, values, img_folder)
+            occs = get_occurrences(args.input_file, args.n)
+            plot(args.n, occs, img_folder)
         else:
-            length, keys, values = get_occurrences(args.input_file, args.n)
-            print_occurrences(length, keys, values)
+            occs = get_occurrences(args.input_file, args.n)
+            print_occurrences(occs)
     else:
         print(f'ERROR: either {args.input_file} or {args.n} or both contains error.')
