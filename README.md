@@ -1,5 +1,5 @@
 # TikTok hashtag analysis toolset 
-The tool helps to download posts and videos from tiktok for a given set of hashtags. It uses tiktok-scraper (https://github.com/drawrowfly/tiktok-scraper) to download the posts and videos.
+The tool helps to download posts and videos from tiktok for a given set of hashtags. It uses the tiktok-scraper (https://github.com/drawrowfly/tiktok-scraper) to download the posts and videos.
 
 ## Pre-requisites
 1. Make sure you have python 3.6 or later version installed.
