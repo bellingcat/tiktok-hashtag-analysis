@@ -34,6 +34,10 @@ $ python run_downloader.py -h
 
 
 
+`pip install numpy`
+
+
+
 ### Post download 
 Run the run_downloader.py with the following option:
 
