@@ -60,7 +60,7 @@ def extract_posts(settings, file_name, tag):
             return new_data
         else:
             if res[0]:
-                new_posts = [ post for post in posts if posts['id'] in res[0].new_ids ]
+                new_posts = [ post for post in posts if post['id'] in res[0].new_ids ]
                 new_data = (res[0].new_ids, new_posts)
                 return new_data
             else:

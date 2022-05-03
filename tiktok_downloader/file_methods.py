@@ -55,19 +55,15 @@ def download_posts(settings, tag):
     os.chdir(path)
     try:
         tiktok_command = f"tiktok-scraper hashtag {tag} -t 'json'" 
-        result = subprocess.run([tiktok_command], capture_output=True, shell=True)
-        if result.stdout:
-            new_file = result.stdout.decode('utf-8').split()[-1]
-            if ("json" in new_file):
-                os.chdir("../../../tiktok_downloader")
-                return new_file 
-            else:
-                print(f"WARNING: Something's wrong with what is returned by tiktok-scraper for the hashtag {tag} - *{new_file}* is not a json file!!!!")
-                os.chdir("../../../tiktok_downloader")
-                return
-        else:
+        result = subprocess.check_output(tiktok_command, shell=True)
+        print(result)
+        new_file = result.decode('utf-8').split()[-1]
+        if ("json" in new_file):
             os.chdir("../../../tiktok_downloader")
-            print(f"WARNING: No file was downloaded by the tiktok-scraper for the {tag} !!!!")
+            return new_file 
+        else:
+            print(f"WARNING: Something's wrong with what is returned by tiktok-scraper for the hashtag {tag} - *{new_file}* is not a json file!!!!")
+            os.chdir("../../../tiktok_downloader")
             return
     except: raise
 
@@ -84,26 +80,21 @@ def download_videos(settings, tag):
     try:
         # tiktok_command = f"tiktok-scraper hashtag {tag} -n {settings['number_of_videos']} -d" 
         tiktok_command = f"tiktok-scraper hashtag {tag} -d" 
-        result = subprocess.run([tiktok_command], capture_output=True, shell=True)
-        if result.stdout:
-            downloaded_list_tmp = os.listdir(f"./#{tag}")
-            if downloaded_list_tmp:
-                downloaded_list = []
-                for file in downloaded_list_tmp:
-                    file = file.split('.')[0]
-                    downloaded_list.append(file)
-                
-                os.chdir("../../../tiktok_downloader")
-                return downloaded_list
-            else:
-                print(f"WARNING: No video files were downloaded for the hashtag {tag}.")
-                os.chdir("../../../tiktok_downloader")
-                shutil.rmtree(settings['videos_delete'])
-                #subprocess.call(f"rm -rf {settings['videos_delete']}", shell=True)
-        else:
+        result = subprocess.check_output(tiktok_command, shell=True)
+        downloaded_list_tmp = os.listdir(f"./#{tag}")
+        if downloaded_list_tmp:
+            downloaded_list = []
+            for file in downloaded_list_tmp:
+                file = file.split('.')[0]
+                downloaded_list.append(file)
+            
             os.chdir("../../../tiktok_downloader")
-            print(f"WARNING: Something went wrong with the tiktok-scraper video download for the {tag} !!!!")
-            return
+            return downloaded_list
+        else:
+            print(f"WARNING: No video files were downloaded for the hashtag {tag}.")
+            os.chdir("../../../tiktok_downloader")
+            shutil.rmtree(settings['videos_delete'])
+            #subprocess.call(f"rm -rf {settings['videos_delete']}", shell=True)
         
     except: raise
 
@@ -112,7 +103,7 @@ def get_data(file_path):
     """
     Reads the json file and retuns the read data.
     """
-    with open(file_path, "r") as f:
+    with open(file_path, "r", encoding = "utf-8") as f:
         data = json.load(f)
         return data
 
@@ -121,7 +112,7 @@ def dump_data(file_path, data):
     """
     Writes the data to the json file.
     """
-    with open(file_path, "w") as f:
+    with open(file_path, "w", encoding = "utf-8") as f:
         json.dump(data, f)
         return            
 
