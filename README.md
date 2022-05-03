@@ -56,10 +56,23 @@ $ tree ../data
 
 ### Post download 
 Run the run_downloader.py with the following option:
-
-<code> python3 run_downloader.py --h london paris newyork -p </code>
-
-<img width="1301" alt="Screenshot 2022-02-25 at 19 14 06" src="https://user-images.githubusercontent.com/72805812/155766542-7de77313-6389-4ea2-aca5-b5f39fd70160.png">
+```
+$ python3 run_downloader.py -t london paris newyork -p
+['london', 'paris', 'newyork']
+SUCCESS - 962 entries added to ../data/london/posts/data.json!!!
+SUCCESS - 962 entries added to ../data/ids/post_ids.json!!!
+Successfully deleted /Users/work/Documents/development_projects/Tiktok/tiktok/data/london/posts/london_1651533070680.json!!!
+Total posts for the hashtag london are: 962
+SUCCESS - 961 entries added to ../data/paris/posts/data.json!!!
+SUCCESS - 961 entries added to ../data/ids/post_ids.json!!!
+Successfully deleted /Users/work/Documents/development_projects/Tiktok/tiktok/data/paris/posts/paris_1651533102789.json!!!
+Total posts for the hashtag paris are: 961
+SUCCESS - 941 entries added to ../data/newyork/posts/data.json!!!
+SUCCESS - 941 entries added to ../data/ids/post_ids.json!!!
+Successfully deleted /Users/work/Documents/development_projects/Tiktok/tiktok/data/newyork/posts/newyork_1651533125549.json!!!
+Total posts for the hashtag newyork are: 941
+Successfully logged 2864 entries!!!!
+```
 
 1. The --h option allows to type in hashtag list in the commandline.
 2. -p option specifies the download posts option.
