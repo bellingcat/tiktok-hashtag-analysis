@@ -1,0 +1,22 @@
+# Data directory
+data/
+
+# Miscellaneous files
+**/.DS_Store
+*.pyc
+*.ipynb
+*.db
+.env
+*.session
+*.session-journal
+service_account.json
+.vscode/
+*.log
+*.lock
+
+# Unit test / coverage reports
+reports
+.coverage*
+.cache
+.pytest_cache/
+cover/

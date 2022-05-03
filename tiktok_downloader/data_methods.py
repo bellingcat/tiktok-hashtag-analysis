@@ -1,7 +1,4 @@
-import os
 from collections import namedtuple
-from datetime import datetime
-import global_data
 import file_methods
 
 """

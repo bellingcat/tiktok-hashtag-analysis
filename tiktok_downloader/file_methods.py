@@ -24,7 +24,7 @@ def create_file(name, file_type):
 
 def check_existence(file_path, file_type):
     """
-    Checks the existence of a file or a directory. If not found, returns a False, else returns a true.
+    Checks the existence of a file or a directory. If not found, returns False, else returns True.
     """
     if (file_type == "file"):
         return os.path.isfile(file_path)
