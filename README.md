@@ -97,7 +97,30 @@ Assume we want to plot the graph of top 20 occurring hashtags in the downloaded 
 The figure above shows the top 20 occurring hashtags among all the posts downloaded for the hashtag london. Clearly, the highest occurrence will be of the hashtag london as the file <code>data/london/posts/data.json</code> contain all the posts with hashtag london.
 
 2. Printing the result in the shell: <code> python3 hashtag_frequencies.py -d ../data/london/posts/data.json 20 -v</code>
-<img width="807" alt="Screenshot 2022-02-25 at 19 54 09" src="https://user-images.githubusercontent.com/72805812/155771757-e71b2858-cd9c-4496-8cc5-76146e8a8d32.png">
+
+```
+Rank     Hashtag         Occurrences     Frequency (Occurrences/Total-Posts(total_posts))
+0        london          962             1.0            
+1        fyp             493             0.5124740124740125
+2        uk              238             0.24740124740124741
+3        foryou          223             0.23180873180873182
+4        foryoupage      186             0.19334719334719336
+5        viral           177             0.183991683991684
+6        fypシ            85              0.08835758835758836
+7        funny           55              0.057172557172557176
+8        xyzbca          52              0.05405405405405406
+9        england         45              0.04677754677754678
+10       british         44              0.04573804573804574
+11       trending        39              0.04054054054054054
+12       fy              33              0.034303534303534305
+13       comedy          32              0.033264033264033266
+14       roadman         28              0.029106029106029108
+15       4u              27              0.028066528066528068
+16       usa             26              0.02702702702702703
+17       tiktok          26              0.02702702702702703
+18       travel          21              0.02182952182952183
+19       america         20              0.02079002079002079
+```
 
 The same result of 1 is printed in the shell. The last column shows the ratio of the occurrence to the total posts.
 
