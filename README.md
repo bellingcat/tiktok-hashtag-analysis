@@ -11,10 +11,22 @@ The tool helps to download posts and videos from tiktok for a given set of hasht
 
 ### Options for running run_downloader.py
 
-<code> python3 run_downloader.py -h </code>
+```
+$ python run_downloader.py -h
+usage: run_downloader.py [-h] [-t [T [T ...]]] [-f F] [-p] [-v]
+
+Download the tiktoks for the requested hashtags
+
+optional arguments:
+-h, --help      show this help message and exit
+-t [T [T ...]]  List of hashtags
+-f F            File name with the list of hashtags
+-p              Download posts
+-v              Download videos
+```
 
 
-<img width="686" alt="Screenshot 2022-02-25 at 19 04 26" src="https://user-images.githubusercontent.com/72805812/155765360-47f0956c-220a-4098-8d52-1304a9f11e69.png">
+
 
 $ python run_downloader.py -h
 
