@@ -27,12 +27,6 @@ optional arguments:
 
 
 
-
-$ python run_downloader.py -h
-
-
-
-
 ### Data organization
 
 ```
