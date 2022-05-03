@@ -25,7 +25,23 @@ $ python run_downloader.py -h
 
 <code> tree ../data </code>
 
-<img width="488" alt="Screenshot 2022-02-25 at 19 21 44" src="https://user-images.githubusercontent.com/72805812/155767522-94bd3774-60eb-45fc-8129-b2abc59c6089.png">
+```
+$ tree ../data
+../data
+├── ids
+│   └── post_ids.json
+├── log
+│   └── log.json
+├── london
+│   └── posts
+│       └── data.json
+├── newyork
+│   └── posts
+│       └── data.json
+└── paris
+    └── posts
+        └── data.json
+```
 
 <code>data</code> folder contains all the downloaded data as shown in the picture above. 
 1. the <code>log</code> folder contains log.json which records the total number of downloaded posts and videos for the hashtags against the time stamp of when the script is run.
