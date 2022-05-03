@@ -57,7 +57,7 @@ $ tree ../data
 ### Post download 
 Run the run_downloader.py with the following option:
 
-         <code> python3 run_downloader.py --h london paris newyork -p </code>
+<code> python3 run_downloader.py --h london paris newyork -p </code>
 
 <img width="1301" alt="Screenshot 2022-02-25 at 19 14 06" src="https://user-images.githubusercontent.com/72805812/155766542-7de77313-6389-4ea2-aca5-b5f39fd70160.png">
 
