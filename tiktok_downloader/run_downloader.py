@@ -7,6 +7,15 @@ import global_data
 import file_methods
 import data_methods
 
+# setting up the logging
+import logging
+from logging.config import fileConfig
+
+fileConfig('../logging.ini')
+logger = logging.getLogger()
+
+
+
 
 """
 The run_downloader.py dowloads data using the tiktok-scraper (https://github.com/drawrowfly/tiktok-scraper).
@@ -49,8 +58,8 @@ def get_hashtag_list(file_name):
             gn = (line.strip() for line in f if not line.startswith("#"))
             tags = list(line for line in gn if line)
             return tags
-    except IOError as error:
-        print(error)
+    except IOError:
+        logger.exception(f"IOError")
 
 
 def create_parser():
@@ -74,12 +83,9 @@ def set_download_settings(download_data_type):
     settings = {}
     settings["data"] = global_data.FILES["data"]
     settings["ids"] = global_data.FILES["ids"]
-    settings["log"] = global_data.FILES["log"]
-    settings["logger"] = global_data.FILES["logger"]
     settings["sleep"] = global_data.PARAMETERS["sleep"]
     settings["scraper"] = global_data.PARAMETERS["scraper_attempts"]
     file_methods.check_file(f"{settings['data']}/{settings['ids']}", "dir")
-    file_methods.check_file(f"{settings['data']}/{settings['log']}", "dir")
     if download_data_type["posts"]:
         settings["posts"] = global_data.FILES["posts"]
         settings["post_ids"] = global_data.FILES["post_ids"]
@@ -188,7 +194,7 @@ def get_hashtags(file_name, hashtag_list):
         from hashtag_list import hashtag_list
         return hashtag_list
     except ImportError:
-        raise ImportError(f"ERROR: something went wrong while reading the file {file_name}!")
+        logger.exception(f"ERROR: something went wrong while reading the file {file_name}!")
 
 
 if __name__ == "__main__":
@@ -209,7 +215,7 @@ if __name__ == "__main__":
 
     print(hashtags)
     if not hashtags:
-        raise Exception("No hashtags were given, please use either --h option or -f to provide hashtags.")
+        logger.exception(f"No hashtags were given, please use either --h option or -f to provide hashtags.")
 
     if (args.p and args.v):
         download_data_type = {
@@ -232,4 +238,4 @@ if __name__ == "__main__":
         if log_data:
             file_methods.log_writer(log_data)
     except:
-        raise
+        logger.exception(f"ERROR")
