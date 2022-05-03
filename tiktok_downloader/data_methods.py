@@ -4,12 +4,22 @@ from datetime import datetime
 import global_data
 import file_methods
 
+# setting up the logging
+import logging
+from logging.config import fileConfig
+
+fileConfig('../logging.ini')
+logger = logging.getLogger()
+
+
+
+
 """
 The file contains several functions that perform data processing related tasks.
 """
 
 
-difference = namedtuple("difference", "new_ids size")
+diff = namedtuple("difference", "ids filter_posts")
 total = namedtuple("total", "total unique")
 
 
@@ -18,23 +28,29 @@ def get_difference(tag, file, ids):
     Compares two sets of ids and returns the difference of the two sets.
     Purpose - user to filter out the new ids by comparing the set of id list (ids/post_ids.json or videos_ids.json) and the list of newly downloaded ids.
     """
-    maiden_entry = False
+    filter_posts = False
     current_id_data = file_methods.get_data(file)
     if tag in current_id_data:
         current_ids = current_id_data[tag]
-        set1 = set(current_ids)
-        set2 = set(ids)
-        new_ids = set2.difference(set1)
-        if new_ids:
-            new_ids = list(new_ids)
-            size = len(new_ids)
-            diff = difference(new_ids, size)
-            return (diff, maiden_entry)
+        set_current_ids = set(current_ids)
+        total_current_ids = len(set_current_ids)
+        set_ids = set(ids)
+        new_ids = set_ids.difference(set_current_ids)
+        if not new_ids:
+            return
         else:
-            return ([], maiden_entry)
-    else:
-        maiden_entry = True
-        return (ids, maiden_entry)
+            new_ids = list(new_ids)
+            total_new_ids = len(new_ids)
+            if total_new_ids == total_current_ids:
+                filter_posts = False
+                new_data = diff(new_ids, filter_posts)
+            else:
+                new_data = diff(new_ids, filter_posts)
+            return new_data
+    else: 
+        filter_posts = True
+        new_data = diff(ids, filter_posts)
+        return new_data
 
 
 def extract_posts(settings, file_name, tag):
@@ -43,13 +59,13 @@ def extract_posts(settings, file_name, tag):
     """
     ids = []
     posts = []
-    new_posts = []
 
     posts = file_methods.get_data(file_name)
     for post in posts:
         ids.append(post["id"])
+
     if not ids:
-        print(f"WARNING: no posts were found for {tag} in the file - {file_name}")
+        logger.warn(f"WARNING: no posts were found for {tag} in the file - {file_name}")
         return
    
     status = file_methods.check_existence(settings["post_ids"], "file")
@@ -57,18 +73,17 @@ def extract_posts(settings, file_name, tag):
         new_data = (ids, posts)
         return new_data
     else:
-        res = get_difference(tag, settings["post_ids"], ids)
-        if res[1]:
-            new_data = (ids, posts)
+        new_ids = get_difference(tag, settings["post_ids"], ids)
+        if not new_ids:
+            logger.warn(f"WARNING: No new posts were found in the downloaded file - {file_name}")
+            return
+        elif new_ids.filter_posts:
+            new_posts = [ post for post in posts if post['id'] in new_ids.ids ]
+            new_data = (new_ids.ids, new_posts)
             return new_data
         else:
-            if res[0]:
-                new_posts = [ post for post in posts if posts['id'] in res[0].new_ids ]
-                new_data = (res[0].new_ids, new_posts)
-                return new_data
-            else:
-                print(f"WARNING: No new posts were found in the downloaded file - {file_name}")
-                return
+            new_data = (new_ids.ids, new_posts)
+            return new_data
 
 
 def extract_videos(settings, tag, download_list):
@@ -80,16 +95,12 @@ def extract_videos(settings, tag, download_list):
         new_data = download_list
         return new_data
     else:
-        res = get_difference(tag, settings["video_ids"], download_list)
-        if res[1]:
-            return download_list
+        new_videos = get_difference(tag, settings["video_ids"], download_list)
+        if not new_videos:
+            logger.warn(f"WARNING: No new videos were found for the {tag} in the downloaded folder.")
+            return
         else:
-            if res[0]:
-                new_data = res[0].new_ids
-                return new_data
-            else:
-                print(f"WARNING: No new videos were found for the {tag} in the downloaded folder.")
-                return
+            return new_videos.ids
 
 
 def update_posts(file_path, file_type, new_data, tag=None):
@@ -139,8 +150,8 @@ def print_total(file_path, tag, data_type):
     """
     total = get_total_posts(file_path, tag)
     if (total.total == total.unique):
-        print(f"Total {data_type} for the hashtag {tag} are: {total.total}")
+        logger.info(f"Total {data_type} for the hashtag {tag} are: {total.total}")
         return
     else:
-        print(f"WARNING: out of total {data_type} for the hashtag {tag} {total.total}, only {total.unique} are unique. Something is going wrong...")
+        logger.warn(f"WARNING: out of total {data_type} for the hashtag {tag} {total.total}, only {total.unique} are unique. Something is going wrong...")
         return
