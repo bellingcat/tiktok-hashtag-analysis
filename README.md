@@ -23,8 +23,6 @@ $ python run_downloader.py -h
 
 ### Data organization
 
-<code> tree ../data </code>
-
 ```
 $ tree ../data
 ../data
