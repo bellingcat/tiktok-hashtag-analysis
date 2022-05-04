@@ -7,10 +7,12 @@ The tool helps to download posts and videos from TikTok for a given set of hasht
 3. (Optional) create and activate a virtual environment for this tool, for example by executing the following command, which creates the `env` virtual environment:
 
     `python3 -m venv env`
+4. Start your virtual environment 
+    `source ./env/bin/activate`
+5. Run `pip install -r requirements.txt`
 
-4. Install the Python package dependencies for this tool by executing the command: 
+You should now be ready to start using the tool.
 
-    `pip install -r requirements.txt`
 
 ## About the tool
 ### Command-line arguments
@@ -47,8 +49,9 @@ $ tree ../data
         └── data.json
 ```
 
+
 The `data` folder contains all the downloaded data as shown in the tree diagram above. 
-- The `log` folder contains the `log.json` file, which records the total number of downloaded posts and videos for the hashtags against the timestamp of when the script was run.
+- (Depricated: logging info is now found in logfile.py in the project folder.) The `log` folder contains the `log.json` file, which records the total number of downloaded posts and videos for the hashtags against the timestamp of when the script was run.
 - The `ids` folder contains two files `post_ids.json` and `video_ids.json` that record the ids of the downloaded posts and videos for each hashtag.
 - Each hashtag has a folder with two subfolders `posts` and `videos` that store posts and videos respectively. The posts are stored in the `data.json` file in the `posts` folder, and videos are stored as the `.mp4` files in the `videos` folder.
 
