@@ -1,7 +1,4 @@
-import os
 from collections import namedtuple
-from datetime import datetime
-import global_data
 import file_methods
 
 # setting up the logging
@@ -37,7 +34,7 @@ def get_difference(tag, file, ids):
         set_ids = set(ids)
         new_ids = set_ids.difference(set_current_ids)
         if not new_ids:
-            return
+            return None
         else:
             new_ids = list(new_ids)
             total_new_ids = len(new_ids)
@@ -78,7 +75,7 @@ def extract_posts(settings, file_name, tag):
             logger.warn(f"WARNING: No new posts were found in the downloaded file - {file_name}")
             return
         elif new_ids.filter_posts:
-            new_posts = [ post for post in posts if post['id'] in new_ids.ids ]
+            new_posts = [post for post in posts if post['id'] in new_ids.ids]
             new_data = (new_ids.ids, new_posts)
             return new_data
         else:

@@ -1,5 +1,5 @@
 import os, sys
-import csv, json
+import json
 import argparse
 import matplotlib.pyplot as plt
 from datetime import datetime
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     "-d" option prints the hashtag frequencies on the shell
     "-p" option plots the hashtag frequencies and saves as a png file in the folder /data/imgs/
 
-    The function get_occurances is triggered to compute and return the top n occurances and the hashtags.
+    The function get_occurrences is triggered to compute and return the top n occurrences and the hashtags.
     """
     img_folder = IMAGES
     check_file(img_folder, "dir")
@@ -112,11 +112,10 @@ if __name__ == "__main__":
 
         base = os.path.splitext(args.input_file)[0]
         path = f"./{base}_sorted_hashtags.csv"
+        occs = get_occurrences(args.input_file, args.n)
         if args.plot:
-            occs = get_occurrences(args.input_file, args.n)
             plot(args.n, occs, img_folder)
         else:
-            occs = get_occurrences(args.input_file, args.n)
             print_occurrences(occs)
     else:
         print(f'ERROR: either {args.input_file} or {args.n} or both contains error.')

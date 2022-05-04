@@ -1,6 +1,5 @@
-import os, sys
+import os
 import time
-import json
 import argparse
 
 import global_data
@@ -15,8 +14,6 @@ fileConfig('../logging.ini')
 logger = logging.getLogger()
 
 
-
-
 """
 The run_downloader.py dowloads data using the tiktok-scraper (https://github.com/drawrowfly/tiktok-scraper).
 1. "-p" option is used by the user to download posts only
@@ -26,7 +23,7 @@ The run_downloader.py dowloads data using the tiktok-scraper (https://github.com
 5. "-f" option is used to read the list of hashtags from the user specified file
 
 Example: 
-    1. The command "python3 run_downloader.py --h london paris newyork -p" will download posts for hashtags london, paris and newyork.  
+    1. The command "python3 run_downloader.py -t london paris newyork -p" will download posts for hashtags london, paris and newyork.  
     2. The command "python3 run_downloader.py -f hashtag_list -p -v" will download posts and videos for hashtags in the file hashtag_list.
 
 
@@ -55,8 +52,7 @@ hashtag_list - this file contains the list of hashtags that the user wants to do
 def get_hashtag_list(file_name):
     try:
         with open(file_name) as f:
-            gn = (line.strip() for line in f if not line.startswith("#"))
-            tags = list(line for line in gn if line)
+            tags = list(filter(None, [line.strip() for line in f if not line.startswith("#")]))
             return tags
     except IOError:
         logger.exception(f"IOError")
@@ -91,7 +87,7 @@ def set_download_settings(download_data_type):
         settings["post_ids"] = global_data.FILES["post_ids"]
         settings["data_file"] = global_data.FILES["data_file"]
     
-    if download_data_type == "videos":
+    if download_data_type["videos"]:
         settings["videos"] = global_data.FILES["videos"]
         settings["video_ids"] = global_data.FILES["video_ids"]
     
@@ -165,7 +161,7 @@ def get_data(hashtags, download_data_type):
             if counter < total_hashtags_offset:
                 time.sleep(settings["sleep"])
     
-    if download_data_type == "videos":
+    if download_data_type["videos"]:
         settings = set_download_settings(download_data_type)
         while counter < total_hashtags:
             tag = hashtags[counter]
@@ -185,24 +181,12 @@ def get_data(hashtags, download_data_type):
     return log_data
 
 
-
-def get_hashtags(file_name, hashtag_list):
-    """
-    Loads and returns the list of hashtags from user specified file.
-    """
-    try:
-        from hashtag_list import hashtag_list
-        return hashtag_list
-    except ImportError:
-        logger.exception(f"ERROR: something went wrong while reading the file {file_name}!")
-
-
 if __name__ == "__main__":
     parser = create_parser()
     args = parser.parse_args()
 
     if not (args.t or args.f):
-        parser.error("No hashtags were given, please use either --h option or -f to provide hashtags.")
+        parser.error("No hashtags were given, please use either -t option or -f to provide hashtags.")
     
     if not (args.p or args.v):
         parser.error("No argument given, please specify either -p for posts or -v videos or both.")
@@ -215,7 +199,7 @@ if __name__ == "__main__":
 
     print(hashtags)
     if not hashtags:
-        logger.exception(f"No hashtags were given, please use either --h option or -f to provide hashtags.")
+        logger.exception("No hashtags were given, please use either -t option or -f to provide hashtags.")
 
     if (args.p and args.v):
         download_data_type = {
