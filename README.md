@@ -8,7 +8,7 @@ The tool helps to download posts and videos from tiktok for a given set of hasht
 4. Start your virtual environment <code> source ./env/bin/activate </code>
 5. Run <code> pip install -r requirements.txt </code>
 
-You should now be ready to play with the tool.
+You should now be ready to start using the tool.
 
 
 
