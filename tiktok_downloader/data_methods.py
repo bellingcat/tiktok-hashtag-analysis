@@ -79,7 +79,7 @@ def extract_posts(settings, file_name, tag):
             new_data = (new_ids.ids, new_posts)
             return new_data
         else:
-            new_data = (new_ids.ids, new_posts)
+            new_data = (new_ids.ids, posts)
             return new_data
 
 
