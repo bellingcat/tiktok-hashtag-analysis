@@ -65,7 +65,6 @@ def download_posts(settings, tag):
     try:
         tiktok_command = f"tiktok-scraper hashtag {tag} -t 'json'" 
         result = subprocess.check_output(tiktok_command, shell=True)
-        print(result)
         new_file = result.decode('utf-8').split()[-1]
         if ("json" in new_file):
             os.chdir("../../../tiktok_downloader")
