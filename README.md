@@ -51,7 +51,7 @@ $ tree ../data
 ```
 
 <code>data</code> folder contains all the downloaded data as shown in the picture above. 
-1. the <code>log</code> folder contains log.json which records the total number of downloaded posts and videos for the hashtags against the time stamp of when the script is run.
+1. (Depricated: logging info is now found in logfile.py in the project folder.) the <code>log</code> folder contains log.json which records the total number of downloaded posts and videos for the hashtags against the time stamp of when the script is run.
 2. the <code>ids</code> folder contains two files <code>post_ids.json</code> and <code>video_ids.json</code> that records the ids of the downloaded posts and videos for each hashtag.
 3. Each hashtag has a folder with two subfolders <code>posts</code> and <code>videos</code> that store posts and videos respectively. The posts are stored in the <code>data.json</code> file in the <code>posts</code> folder, and videos are stored as the <code>.mp4</code> files in the <code>videos</code> folder.
 
