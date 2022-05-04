@@ -3,14 +3,13 @@ import json
 import argparse
 import matplotlib.pyplot as plt
 from datetime import datetime
+from file_methods import check_file
+from global_data import IMAGES
+
 
 """
 Plots the frequency of hashtags appearing in the set of given posts.
 """
-
-
-sys.path.insert(0, '../tiktok_downloader')
-import file_methods, global_data
 
 
 
@@ -98,8 +97,8 @@ if __name__ == "__main__":
 
     The function get_occurrences is triggered to compute and return the top n occurrences and the hashtags.
     """
-    img_folder = global_data.IMAGES
-    file_methods.check_file(img_folder, "dir")
+    img_folder = IMAGES
+    check_file(img_folder, "dir")
     parser = argparse.ArgumentParser()
     parser.add_argument("input_file", help="The json hashtag file name")
     parser.add_argument("n", help="The number of top n occurrences", type=int)

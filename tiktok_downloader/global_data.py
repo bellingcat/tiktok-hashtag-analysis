@@ -6,7 +6,6 @@ Contains global constants relating to paths and operational parameters such as s
 # Directories
 DATA = "../data"
 IDS = "ids"
-LOG = "log"
 POSTS = "posts"
 VIDEOS = "videos"
 IMAGES = f"{DATA}/img"
@@ -15,13 +14,11 @@ IMAGES = f"{DATA}/img"
 POST_IDS = "post_ids.json"
 VIDEO_IDS = "video_ids.json"
 DATA_FILE = "data.json"
-LOG_FILE = "log.json"
 
 
 FILES = {
             "data" : DATA,
             "ids" : IDS,
-            "log" : LOG,
             "posts" : POSTS,
             "videos" : VIDEOS,
             "images" : IMAGES,
@@ -29,7 +26,6 @@ FILES = {
             "video_ids" : f"{DATA}/{IDS}/{VIDEO_IDS}",
             "data_file" : f"{DATA_FILE}",
             "downloads" : [],
-            "logger" : f"{DATA}/{LOG}/{LOG_FILE}",
         }
 
 

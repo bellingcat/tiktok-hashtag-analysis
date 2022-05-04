@@ -4,6 +4,15 @@ import global_data
 import shutil
 
 
+# setting up the logging
+import logging
+from logging.config import fileConfig
+
+fileConfig('../logging.ini')
+logger = logging.getLogger()
+
+
+
 """
 The file contains the functions that operate on files, such as writing or reading from files etc.
 """
@@ -18,7 +27,7 @@ def create_file(name, file_type):
     elif (file_type == "file"):
         with open(name, "w"): pass
     else:
-        raise OSError(f"{file_type} has to be a 'dir' or a 'file'!!!")
+        logger.exception(f"{file_type} has to be a 'dir' or a 'file'!!!")
     return
 
 
@@ -31,7 +40,7 @@ def check_existence(file_path, file_type):
     elif (file_type == "dir"):
         return os.path.isdir(file_path)
     else:
-        raise OSError(f"{file_type} has to be a 'dir' or a 'file'!!!")
+        logger.exception(f"{file_type} has to be a 'dir' or a 'file'!!!")
 
 
 def check_file(file_path, file_type):
@@ -62,7 +71,7 @@ def download_posts(settings, tag):
             os.chdir("../../../tiktok_downloader")
             return new_file 
         else:
-            print(f"WARNING: Something's wrong with what is returned by tiktok-scraper for the hashtag {tag} - *{new_file}* is not a json file!!!!")
+            logger.warn(f"WARNING: Something's wrong with what is returned by tiktok-scraper for the hashtag {tag} - *{new_file}* is not a json file!!!!")
             os.chdir("../../../tiktok_downloader")
             return
     except: raise
@@ -136,20 +145,15 @@ def log_writer(log_data):
                 log_dict[ele[0]] = { ele[1][0] : ele[1][1] }
                 total += ele[1][1]
 
-        logger = global_data.FILES["logger"]
         now = datetime.now()
         now_str = now.strftime("%d-%m-%Y %H:%M:%S")
-        status = check_existence(logger, "file")
-        if status:
-            data = get_data(logger)
-            data[now_str] = log_dict
-            dump_data(logger, data)
-        else:
-            data = { now_str : log_dict }
-            dump_data(logger, data)
-        print(f"Successfully logged {total} entries!!!!")
+        data = { now_str : log_dict }
+
+        logger.warn(data)
+        logger.info(f"Successfully logged {total} entries!!!!")
         return
-    except: raise
+    except:
+        logger.exception()
 
 
 def id_writer(file_path, new_data, tag, status):
@@ -172,10 +176,11 @@ def id_writer(file_path, new_data, tag, status):
         else:
             data = { tag : new_data }
             dump_data(file_path, data)
-        print(f"SUCCESS - {total} entries added to {file_path}!!!")
+        logger.info(f"SUCCESS - {total} entries added to {file_path}!!!")
         log_data = (tag, total)
         return log_data
-    except: raise
+    except:
+        logger.exception()
 
 
 def post_writer(file_path, new_data, status):
@@ -195,9 +200,10 @@ def post_writer(file_path, new_data, status):
         else:
             data = new_data
             dump_data(file_path, data)
-        print(f"SUCCESS - {total} entries added to {file_path}!!!")
+        logger.info(f"SUCCESS - {total} entries added to {file_path}!!!")
         return
-    except: raise
+    except:
+        logger.exception()
 
 
 def delete_file(file_path, file_type):
@@ -205,17 +211,17 @@ def delete_file(file_path, file_type):
     Deletes the directory or the file.
     """
     if not check_existence(file_path, file_type):
-        raise Exception(f"ERROR: Attempt to delete failed. {file_path} does not exist!!!")
+        logger.exception(f"ERROR: Attempt to delete failed. {file_path} does not exist!!!")
     elif (file_type == "file"):
         os.remove(file_path)
-        print(f"Successfully deleted {file_path}!!!")
+        logger.info(f"Successfully deleted {file_path}!!!")
         return
     elif (file_type == "dir"):
         os.rmdir(file_path)
-        print(f"Successfully deleted {file_path}!!!")
+        logger.info(f"Successfully deleted {file_path}!!!")
         return
     else:
-        raise OSError(f"ERROR: {file_type} needs to be either 'file' or 'dir' !!!")
+        logger.exception(f"OSError: {file_type} needs to be either 'file' or 'dir' !!!")
 
 
 def clean_video_files(settings, tag, new_data=None):
@@ -228,10 +234,8 @@ def clean_video_files(settings, tag, new_data=None):
             for file in new_data:
                 settings["videos_from"] = settings['data'] + f"/{tag}/videos/#{tag}/{file}.mp4"
                 shutil.move(settings['videos_from'], settings['videos_to'])
-                #subprocess.call(f"mv {settings['videos_from']} {settings['videos_to']}", shell=True)
              
         shutil.rmtree(settings['videos_delete'])
-        #subprocess.call(f"rm -rf {settings['videos_delete']}", shell=True)
-        print(f"Successfully deleted the folder {settings['videos_delete']} folder of videos.")
+        logger.info(f"Successfully deleted the folder {settings['videos_delete']} folder of videos.")
     except:
         raise
