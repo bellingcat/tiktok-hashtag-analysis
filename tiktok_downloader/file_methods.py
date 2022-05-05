@@ -1,17 +1,16 @@
-import os, json, subprocess
+import os
+import json
+import subprocess
 from datetime import datetime
-import global_data
 import shutil
+import warnings
 
-
-# setting up the logging
 import logging
-from logging.config import fileConfig
 
-fileConfig('../logging.ini')
+logging.basicConfig(
+    level = logging.INFO,
+    format = '%(message)s')
 logger = logging.getLogger()
-
-
 
 """
 The file contains the functions that operate on files, such as writing or reading from files etc.
@@ -27,8 +26,7 @@ def create_file(name, file_type):
     elif (file_type == "file"):
         with open(name, "w"): pass
     else:
-        logger.exception(f"{file_type} has to be a 'dir' or a 'file'!!!")
-    return
+        raise ValueError(f"{file_type} has to be either 'dir' or 'file'")
 
 
 def check_existence(file_path, file_type):
@@ -40,7 +38,7 @@ def check_existence(file_path, file_type):
     elif (file_type == "dir"):
         return os.path.isdir(file_path)
     else:
-        logger.exception(f"{file_type} has to be a 'dir' or a 'file'!!!")
+        raise ValueError(f"{file_type} has to be either 'dir' or 'file'")
 
 
 def check_file(file_path, file_type):
@@ -51,8 +49,6 @@ def check_file(file_path, file_type):
     if not status:
         create_file(file_path, file_type)    
 
-    return
-
 
 def download_posts(settings, tag):
     """
@@ -62,18 +58,15 @@ def download_posts(settings, tag):
     """
     path = os.path.join(settings["data"], tag, settings["posts"])
     os.chdir(path)
-    try:
-        tiktok_command = f"tiktok-scraper hashtag {tag} -t 'json'" 
-        result = subprocess.check_output(tiktok_command, shell=True)
-        new_file = result.decode('utf-8').split()[-1]
-        if ("json" in new_file):
-            os.chdir("../../../tiktok_downloader")
-            return new_file 
-        else:
-            logger.warn(f"WARNING: Something's wrong with what is returned by tiktok-scraper for the hashtag {tag} - *{new_file}* is not a json file!!!!")
-            os.chdir("../../../tiktok_downloader")
-            return
-    except: raise
+    tiktok_command = f"tiktok-scraper hashtag {tag} -t 'json'" 
+    output = subprocess.check_output(tiktok_command, shell=True, encoding = 'utf-8')
+    new_file = output.split()[-1]
+    if ("json" in new_file):
+        os.chdir("../../../tiktok_downloader")
+        return new_file 
+    else:
+        warnings.warn(f"Something's wrong with what is returned by tiktok-scraper for the hashtag {tag} - *{new_file}* is not a json file.\n\ntiktok-scraper returned {output}")
+        os.chdir("../../../tiktok_downloader")
 
 
 
@@ -85,27 +78,22 @@ def download_videos(settings, tag):
     """
     path = os.path.join(settings["data"], tag, settings["videos"])
     os.chdir(path)
-    try:
-        # tiktok_command = f"tiktok-scraper hashtag {tag} -n {settings['number_of_videos']} -d" 
-        tiktok_command = f"tiktok-scraper hashtag {tag} -d" 
-        result = subprocess.check_output(tiktok_command, shell=True)
-        downloaded_list_tmp = os.listdir(f"./#{tag}")
-        if downloaded_list_tmp:
-            downloaded_list = []
-            for file in downloaded_list_tmp:
-                file = file.split('.')[0]
-                downloaded_list.append(file)
-            
-            os.chdir("../../../tiktok_downloader")
-            return downloaded_list
-        else:
-            print(f"WARNING: No video files were downloaded for the hashtag {tag}.")
-            os.chdir("../../../tiktok_downloader")
-            shutil.rmtree(settings['videos_delete'])
-            #subprocess.call(f"rm -rf {settings['videos_delete']}", shell=True)
+    tiktok_command = f"tiktok-scraper hashtag {tag} -d" 
+    result = subprocess.check_output(tiktok_command, shell=True)
+    downloaded_list_tmp = os.listdir(f"./#{tag}")
+    if downloaded_list_tmp:
+        downloaded_list = []
+        for file in downloaded_list_tmp:
+            file = file.split('.')[0]
+            downloaded_list.append(file)
         
-    except: raise
-
+        os.chdir("../../../tiktok_downloader")
+        return downloaded_list
+    else:
+        warnings.warn(f"No video files were downloaded for the hashtag {tag}.")
+        os.chdir("../../../tiktok_downloader")
+        shutil.rmtree(settings['videos_delete'])
+        
 
 def get_data(file_path):
     """
@@ -122,7 +110,6 @@ def dump_data(file_path, data):
     """
     with open(file_path, "w", encoding = "utf-8") as f:
         json.dump(data, f)
-        return            
 
 def log_writer(log_data):
     """
@@ -131,78 +118,67 @@ def log_writer(log_data):
     Writes the dictionary to the log file (logs/log.json).
     """
     total = 0
-    try:
-        log_dict = {}
-        for ele in log_data:
-            if ele[0] in log_dict:
-                if ele[1][0] in log_dict[ele[0]]:
-                    log_dict[ele[0]][ele[1][0]] += ele[1][1]
-                else:
-                    log_dict[ele[0]][ele[1][0]] = ele[1][1]
-                total += ele[1][1]
+    scraped_summary_dict = {}
+    for hashtag, (data_type, count) in log_data:
+        if hashtag in scraped_summary_dict:
+            if data_type in scraped_summary_dict[hashtag]:
+                scraped_summary_dict[hashtag][data_type] += count
             else:
-                log_dict[ele[0]] = { ele[1][0] : ele[1][1] }
-                total += ele[1][1]
+                scraped_summary_dict[hashtag][data_type] = count
+            total += count
+        else:
+            scraped_summary_dict[hashtag] = {data_type : count}
+            total += count
 
-        now = datetime.now()
-        now_str = now.strftime("%d-%m-%Y %H:%M:%S")
-        data = { now_str : log_dict }
+    now = datetime.now()
+    now_str = now.strftime("%d-%m-%Y %H:%M:%S")
+    data = { now_str : scraped_summary_dict }
 
-        logger.warn(data)
-        logger.info(f"Successfully logged {total} entries!!!!")
-        return
-    except:
-        logger.exception()
+    logger.debug(f"Logged post data: {data}")
+    logger.info(f"Successfully scraped {total} total entries")
 
 
 def id_writer(file_path, new_data, tag, status):
     """
-    Writes the list of new ids to the post_ids or video_ds files.
+    Writes the list of new ids to the post_ids or video_ids files.
     """
-    try:
-        total = len(new_data)
-        if status:
-            try:
-                data = get_data(file_path)
-                if tag in data:
-                    data[tag] += new_data
-                else:
-                    data[tag]= new_data 
-                dump_data(file_path, data)
-            except json.decoder.JSONDecodeError:
-                data = { tag : new_data }
-                dump_data(file_path, data)
-        else:
+    total = len(new_data)
+    if status:
+        try:
+            data = get_data(file_path)
+            if tag in data:
+                data[tag] += new_data
+            else:
+                data[tag]= new_data 
+            dump_data(file_path, data)
+        except json.decoder.JSONDecodeError:
             data = { tag : new_data }
             dump_data(file_path, data)
-        logger.info(f"SUCCESS - {total} entries added to {file_path}!!!")
-        log_data = (tag, total)
-        return log_data
-    except:
-        logger.exception()
+    else:
+        data = { tag : new_data }
+        dump_data(file_path, data)
+    logger.debug(f"SUCCESS - {total} entries added to {file_path}")
+    number_scraped = (tag, total)
+    return number_scraped
 
 
 def post_writer(file_path, new_data, status):
     """
     Writes the new posts in the post file of the given hashtag (/data/{hashtag}/posts/data.json)
     """
-    try:
-        total = len(new_data)
-        if status:
-            try:
-                data = get_data(file_path)
-                data += new_data
-                dump_data(file_path, data)
-            except json.decoder.JSONDecodeError:
-                data = new_data
-                dump_data(file_path, data)
-        else:
+    total = len(new_data)
+    if status:
+        try:
+            data = get_data(file_path)
+            data += new_data
+            dump_data(file_path, data)
+        except json.decoder.JSONDecodeError:
             data = new_data
             dump_data(file_path, data)
-        logger.info(f"SUCCESS - {total} entries added to {file_path}!!!")
-        return
-    except:
-        logger.exception()
+    else:
+        data = new_data
+        dump_data(file_path, data)
+    logger.debug(f"SUCCESS - {total} entries added to {file_path}")
 
 
 def delete_file(file_path, file_type):
@@ -210,17 +186,15 @@ def delete_file(file_path, file_type):
     Deletes the directory or the file.
     """
     if not check_existence(file_path, file_type):
-        logger.exception(f"ERROR: Attempt to delete failed. {file_path} does not exist!!!")
+        raise OSError(f"Attempt to delete file failed: {file_path} does not exist")
     elif (file_type == "file"):
         os.remove(file_path)
-        logger.info(f"Successfully deleted {file_path}!!!")
-        return
+        logger.debug(f"Successfully deleted {file_path}")
     elif (file_type == "dir"):
         os.rmdir(file_path)
-        logger.info(f"Successfully deleted {file_path}!!!")
-        return
+        logger.debug(f"Successfully deleted {file_path}")
     else:
-        logger.exception(f"OSError: {file_type} needs to be either 'file' or 'dir' !!!")
+        raise OSError("{file_type} needs to be either 'file' or 'dir'")
 
 
 def clean_video_files(settings, tag, new_data=None):
@@ -228,13 +202,10 @@ def clean_video_files(settings, tag, new_data=None):
     Moves the new videos from the tiktok-scraper video folder to /data/{hashtag}/videos/
     Deletes the residual tiktok-scraper video folder.
     """
-    try:
-        if new_data:
-            for file in new_data:
-                settings["videos_from"] = settings['data'] + f"/{tag}/videos/#{tag}/{file}.mp4"
-                shutil.move(settings['videos_from'], settings['videos_to'])
-             
-        shutil.rmtree(settings['videos_delete'])
-        logger.info(f"Successfully deleted the folder {settings['videos_delete']} folder of videos.")
-    except:
-        raise
+    if new_data:
+        for file in new_data:
+            settings["videos_from"] = settings['data'] + f"/{tag}/videos/#{tag}/{file}.mp4"
+            shutil.move(settings['videos_from'], settings['videos_to'])
+            
+    shutil.rmtree(settings['videos_delete'])
+    logger.debug(f"Successfully deleted the folder {settings['videos_delete']} folder of videos.")

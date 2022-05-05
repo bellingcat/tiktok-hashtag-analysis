@@ -4,12 +4,17 @@ The tool helps to download posts and videos from TikTok for a given set of hasht
 ## Pre-requisites
 1. Make sure you have Python 3.6 or a later version installed.
 2. Download and install TikTok scraper: https://github.com/drawrowfly/tiktok-scraper 
-3. (Optional) create and activate a virtual environment for this tool, for example by executing the following command, which creates the `env` virtual environment:
+3. (Optional) create and activate a virtual environment for this tool, for example by executing the following command, which creates the `.env` virtual environment in the project directory:
 
-    `python3 -m venv env`
-4. Start your virtual environment 
-    `source ./env/bin/activate`
-5. Run `pip install -r requirements.txt`
+    `python3 -m venv .env`
+
+4. Start your virtual environment
+    - On Unix-like operating systems (macOS, Linux), this can be done using the command `source .env/bin/activate`
+    - On Windows, this can be done using the command `.env\activate.bat`
+    
+5. Install the Python package dependencies for this tool by executing the command: 
+
+    `pip install -r requirements.txt`
 
 You should now be ready to start using the tool.
 
@@ -36,8 +41,6 @@ $ tree ../data
 ../data
 ├── ids
 │   └── post_ids.json
-├── log
-│   └── log.json
 ├── london
 │   └── posts
 │       └── data.json
@@ -51,7 +54,6 @@ $ tree ../data
 
 
 The `data` folder contains all the downloaded data as shown in the tree diagram above. 
-- (Depricated: logging info is now found in logfile.py in the project folder.) The `log` folder contains the `log.json` file, which records the total number of downloaded posts and videos for the hashtags against the timestamp of when the script was run.
 - The `ids` folder contains two files `post_ids.json` and `video_ids.json` that record the ids of the downloaded posts and videos for each hashtag.
 - Each hashtag has a folder with two subfolders `posts` and `videos` that store posts and videos respectively. The posts are stored in the `data.json` file in the `posts` folder, and videos are stored as the `.mp4` files in the `videos` folder.
 
@@ -65,20 +67,11 @@ Running the `run_downloader.py` script with the following options will scrape po
 and will produce an output similar to the following log:
 
     $ python3 run_downloader.py -t london paris newyork -p
-    ['london', 'paris', 'newyork']
-    SUCCESS - 962 entries added to ../data/london/posts/data.json!!!
-    SUCCESS - 962 entries added to ../data/ids/post_ids.json!!!
-    Successfully deleted /Users/work/Documents/development_projects/Tiktok/tiktok/data/london/posts/london_1651533070680.json!!!
-    Total posts for the hashtag london are: 962
-    SUCCESS - 961 entries added to ../data/paris/posts/data.json!!!
-    SUCCESS - 961 entries added to ../data/ids/post_ids.json!!!
-    Successfully deleted /Users/work/Documents/development_projects/Tiktok/tiktok/data/paris/posts/paris_1651533102789.json!!!
-    Total posts for the hashtag paris are: 961
-    SUCCESS - 941 entries added to ../data/newyork/posts/data.json!!!
-    SUCCESS - 941 entries added to ../data/ids/post_ids.json!!!
-    Successfully deleted /Users/work/Documents/development_projects/Tiktok/tiktok/data/newyork/posts/newyork_1651533125549.json!!!
-    Total posts for the hashtag newyork are: 941
-    Successfully logged 2864 entries!!!!
+    Hashtags to scrape: ['london', 'paris', 'newyork']
+    Scraped 963 posts containing the hashtag 'london'
+    Scraped 961 posts containing the hashtag 'paris'
+    Scraped 940 posts containing the hashtag 'newyork'
+    Successfully scraped 2864 total entries
 
 - The `-t` flag allows a space-separated list of hashtags to be specified as a command line argument
 - The `-p` flag specifies that posts, not videos, will be downloaded
@@ -128,7 +121,7 @@ Assume we want to analyze the top 20 occurring hashtags in the downloaded posts 
 
     which will produce a terminal output similar to the following:
     ```
-    Rank     Hashtag         Occurrences     Frequency (Occurrences/Total-Posts(total_posts))
+    Rank     Hashtag         Occurrences     Frequency
     0        london          962             1.0            
     1        fyp             493             0.5124740124740125
     2        uk              238             0.24740124740124741

@@ -1,14 +1,10 @@
 from collections import namedtuple
+import warnings
+import logging
+
 import file_methods
 
-# setting up the logging
-import logging
-from logging.config import fileConfig
-
-fileConfig('../logging.ini')
 logger = logging.getLogger()
-
-
 
 
 """
@@ -62,8 +58,7 @@ def extract_posts(settings, file_name, tag):
         ids.append(post["id"])
 
     if not ids:
-        logger.warn(f"WARNING: no posts were found for {tag} in the file - {file_name}")
-        return
+        warnings.warn(f"No posts were found for {tag} in the file - {file_name}")
    
     status = file_methods.check_existence(settings["post_ids"], "file")
     if not status:
@@ -72,8 +67,7 @@ def extract_posts(settings, file_name, tag):
     else:
         new_ids = get_difference(tag, settings["post_ids"], ids)
         if not new_ids:
-            logger.warn(f"WARNING: No new posts were found in the downloaded file - {file_name}")
-            return
+            warnings.warn(f"No new posts were found in the downloaded file - {file_name}")
         elif new_ids.filter_posts:
             new_posts = [post for post in posts if post['id'] in new_ids.ids]
             new_data = (new_ids.ids, new_posts)
@@ -94,8 +88,8 @@ def extract_videos(settings, tag, download_list):
     else:
         new_videos = get_difference(tag, settings["video_ids"], download_list)
         if not new_videos:
-            logger.warn(f"WARNING: No new videos were found for the {tag} in the downloaded folder.")
-            return
+            warnings.warn(f"No new videos were found for the {tag} in the downloaded folder.")
+            return None
         else:
             return new_videos.ids
 
@@ -104,15 +98,12 @@ def update_posts(file_path, file_type, new_data, tag=None):
     """
     Updates the list of post ids (in the file ids/post_ids.json) with the ids of the new posts.
     """
-    try:
-        status = file_methods.check_existence(file_path, file_type)
-        if not tag:
-            file_methods.post_writer(file_path, new_data, status)
-        else:
-            log = file_methods.id_writer(file_path, new_data, tag, status)
-            return log
-    except:
-        raise
+    status = file_methods.check_existence(file_path, file_type)
+    if not tag:
+        file_methods.post_writer(file_path, new_data, status)
+    else:
+        scraped_data = file_methods.id_writer(file_path, new_data, tag, status)
+        return scraped_data
 
 
 def update_videos(settings, new_data, tag):
@@ -147,8 +138,6 @@ def print_total(file_path, tag, data_type):
     """
     total = get_total_posts(file_path, tag)
     if (total.total == total.unique):
-        logger.info(f"Total {data_type} for the hashtag {tag} are: {total.total}")
-        return
+        logger.info(f"Scraped {total.total} {data_type} containing the hashtag '{tag}'")
     else:
-        logger.warn(f"WARNING: out of total {data_type} for the hashtag {tag} {total.total}, only {total.unique} are unique. Something is going wrong...")
-        return
+        warnings.warn(f"Out of total {data_type} for the hashtag {tag} {total.total}, only {total.unique} are unique. Something is going wrong...")
