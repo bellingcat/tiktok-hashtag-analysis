@@ -2,9 +2,9 @@
 The tool helps to download posts and videos from TikTok for a given set of hashtags. It uses the [tiktok-scraper](https://github.com/drawrowfly/tiktok-scraper) Node package  to download the posts and videos.
 
 ## Pre-requisites
-1. Make sure you have Python 3.6 or a later version installed.
+1. Make sure you have Python 3.6 or a later version installed
 2. Download and install TikTok scraper: https://github.com/drawrowfly/tiktok-scraper 
-3. (Optional) create and activate a virtual environment for this tool, for example by executing the following command, which creates the `.env` virtual environment in the project directory:
+3. (Optional) create and activate a virtual environment for this tool, for example by executing the following command, which creates the `.env` virtual environment in the tool's root directory:
 
     `python3 -m venv .env`
 
@@ -77,13 +77,13 @@ and will produce an output similar to the following log:
 - The `-p` flag specifies that posts, not videos, will be downloaded
 
 ### Video downloading
-Running the `run_downloader.py` script with the following options will scrape trending videos containing the hashtags `#london`, `#paris`, or `#newyork`:
+Running the `run_downloader.py` script with the following options will scrape trending videos containing the hashtag `#london`:
 ` python3 run_downloader.py -t london -v`
 
 - The `-t` flag allows a space-separated list of hashtags to be specified as a command line argument
 - The `-v` flag specifies that videos, not posts, will be downloaded
 
-Note that video downloading is a time and data rate consuming task, as a result we strongly recommend using one hashtag at a time when using the `-v` flag to avoid complications.
+Note that video downloading is a time and data rate consuming task, as a result we recommend using one hashtag at a time when using the `-v` flag to avoid complications.
 
 ## Analyzing results 
 ### Top n hashtag occurrences 
@@ -103,7 +103,7 @@ optional arguments:
   -d, --print  List top n hashtags
   ```
 
-Assume we want to analyze the top 20 occurring hashtags in the downloaded posts of the `#london` hashtag.
+Assume we want to analyze the 20 most frequently occurring hashtags in the downloaded posts of the `#london` hashtag.
 
 - The results can be plotted and saved as a PNG file by executing the following command: 
 
@@ -114,7 +114,7 @@ Assume we want to analyze the top 20 occurring hashtags in the downloaded posts 
         <img src="https://user-images.githubusercontent.com/18430739/166878928-d146b352-b68c-4ab4-bd2c-feb2f0140df9.png" height="500" alt="Top 20 most frequent common hashtags in posts containing the #london hashtag">
     </p>
     
-    Clearly, the highest occurrence will be of the `#london` hashtag, as all posts in the file `data/london/posts/data.json` contain the hashtag `#london`.
+    In the above plot, the highest occurrence is the `#fyp` hashtag, which is tagged in more than half of all posts containing the `#london` hashtag.
 
 - The results can be displayed in tabular form by executing the following command:
 
