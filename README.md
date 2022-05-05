@@ -10,7 +10,7 @@ The tool helps to download posts and videos from TikTok for a given set of hasht
 
 4. Start your virtual environment
     - On Unix-like operating systems (macOS, Linux), this can be done using the command `source .env/bin/activate`
-    - On Windows, this can be done using the command `.env\activate.bat`
+    - On Windows, this can be done using the command `.env\Scripts\activate.bat`
     
 5. Install the Python package dependencies for this tool by executing the command: 
 
