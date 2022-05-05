@@ -1,13 +1,16 @@
 import os
 import time
 import argparse
-import logging
+import logging, logging.config
 
 import global_data
 import file_methods
 import data_methods
 
-logger = logging.getLogger()
+
+logging.config.fileConfig("../logging.config")
+logger = logging.getLogger("Logger")
+
 
 def get_hashtag_list(file_name):
     if not file_methods.check_existence(file_name, 'file'):

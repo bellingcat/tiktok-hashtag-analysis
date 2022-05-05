@@ -3,14 +3,11 @@ import json
 import subprocess
 from datetime import datetime
 import shutil
-import warnings
 
-import logging
+import logging, logging.config
 
-logging.basicConfig(
-    level = logging.INFO,
-    format = '%(message)s')
-logger = logging.getLogger()
+logging.config.fileConfig("../logging.config")
+logger = logging.getLogger("Logger")
 
 """
 The file contains the functions that operate on files, such as writing or reading from files etc.
@@ -65,9 +62,8 @@ def download_posts(settings, tag):
         os.chdir("../../../tiktok_downloader")
         return new_file 
     else:
-        warnings.warn(f"Something's wrong with what is returned by tiktok-scraper for the hashtag {tag} - *{new_file}* is not a json file.\n\ntiktok-scraper returned {output}")
+        logger.warn(f"Something's wrong with what is returned by tiktok-scraper for the hashtag {tag} - *{new_file}* is not a json file.\n\ntiktok-scraper returned {output}")
         os.chdir("../../../tiktok_downloader")
-
 
 
 def download_videos(settings, tag):
@@ -90,7 +86,7 @@ def download_videos(settings, tag):
         os.chdir("../../../tiktok_downloader")
         return downloaded_list
     else:
-        warnings.warn(f"No video files were downloaded for the hashtag {tag}.")
+        logger.warn(f"No video files were downloaded for the hashtag {tag}.")
         os.chdir("../../../tiktok_downloader")
         shutil.rmtree(settings['videos_delete'])
         
@@ -134,7 +130,7 @@ def log_writer(log_data):
     now_str = now.strftime("%d-%m-%Y %H:%M:%S")
     data = { now_str : scraped_summary_dict }
 
-    logger.debug(f"Logged post data: {data}")
+    logger.warn(f"Logged post data: {data}")
     logger.info(f"Successfully scraped {total} total entries")
 
 

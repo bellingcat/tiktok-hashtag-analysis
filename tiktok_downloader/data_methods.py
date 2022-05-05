@@ -1,10 +1,10 @@
 from collections import namedtuple
-import warnings
-import logging
+import logging, logging.config
 
 import file_methods
 
-logger = logging.getLogger()
+logging.config.fileConfig("../logging.config")
+logger = logging.getLogger("Logger")
 
 
 """
@@ -58,7 +58,7 @@ def extract_posts(settings, file_name, tag):
         ids.append(post["id"])
 
     if not ids:
-        warnings.warn(f"No posts were found for {tag} in the file - {file_name}")
+        logger.warn(f"No posts were found for the hashtag: {tag}")
    
     status = file_methods.check_existence(settings["post_ids"], "file")
     if not status:
@@ -67,7 +67,7 @@ def extract_posts(settings, file_name, tag):
     else:
         new_ids = get_difference(tag, settings["post_ids"], ids)
         if not new_ids:
-            warnings.warn(f"No new posts were found in the downloaded file - {file_name}")
+            logger.warn(f"No new posts were found for the hashtag: {tag}")
         elif new_ids.filter_posts:
             new_posts = [post for post in posts if post['id'] in new_ids.ids]
             new_data = (new_ids.ids, new_posts)
@@ -88,7 +88,7 @@ def extract_videos(settings, tag, download_list):
     else:
         new_videos = get_difference(tag, settings["video_ids"], download_list)
         if not new_videos:
-            warnings.warn(f"No new videos were found for the {tag} in the downloaded folder.")
+            logger.warn(f"No new videos were found for the {tag} in the downloaded folder.")
             return None
         else:
             return new_videos.ids
@@ -140,4 +140,4 @@ def print_total(file_path, tag, data_type):
     if (total.total == total.unique):
         logger.info(f"Scraped {total.total} {data_type} containing the hashtag '{tag}'")
     else:
-        warnings.warn(f"Out of total {data_type} for the hashtag {tag} {total.total}, only {total.unique} are unique. Something is going wrong...")
+        logger.warn(f"Out of total {data_type} for the hashtag {tag} {total.total}, only {total.unique} are unique. Something is going wrong...")
