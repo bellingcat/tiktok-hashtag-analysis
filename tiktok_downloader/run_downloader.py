@@ -1,61 +1,20 @@
 import os
 import time
 import argparse
+import logging
 
 import global_data
 import file_methods
 import data_methods
 
-# setting up the logging
-import logging
-from logging.config import fileConfig
-
-fileConfig('../logging.ini')
 logger = logging.getLogger()
 
-
-"""
-The run_downloader.py dowloads data using the tiktok-scraper (https://github.com/drawrowfly/tiktok-scraper).
-1. "-p" option is used by the user to download posts only
-2. "-v" option is use to download videos only
-3. "-p -v" is used to download posts and videos
-4. "-t" is used to specify a list of hashtags as arguments
-5. "-f" option is used to read the list of hashtags from the user specified file
-
-Example: 
-    1. The command "python3 run_downloader.py -t london paris newyork -p" will download posts for hashtags london, paris and newyork.  
-    2. The command "python3 run_downloader.py -f hashtag_list -p -v" will download posts and videos for hashtags in the file hashtag_list.
-
-
-The downloaded data is stored in the the data folder. The data is folder is organized as follows:
-    1. the log subfolder contains the log.json that records total downloads (posts and videos) for each hashtag with a timestamp of when the script was run.
-    2. the ids subfolder contains post_ids.json and video_ids.json that keep the record of post and video ids that are currently in the data set. This helps to filter out only new posts every time tiktok-scraper is run and only those new posts (or videos) are then stored in the data folder.
-    3. Each hashtag has a subfolder by its name containing two subfolders, one each for posts and videos.
-
-
-This scripts runs the function get_data in main which in turn triggers the following sequence:
-    1. get_posts function is triggered if the user wants to download posts
-    2. get_videos function is triggered if the user wants to download videos
-    3. both functions above are sequentially triggered if the user wants to download both posts and videos.
-    4. After the data is downloaded the log_writer is triggered to log the total number of posts and videos downloaded.
-
-
-------------Files--------------
-global_data - contains global constants relating to paths etc.
-data_methods - this file contains data processing methods
-file_methods - this file contains methods to write and update data in files
-hashtag_list - this file contains the list of hashtags that the user wants to download data for.
-"""
-
-
-
 def get_hashtag_list(file_name):
-    try:
-        with open(file_name) as f:
-            tags = list(filter(None, [line.strip() for line in f if not line.startswith("#")]))
-            return tags
-    except IOError:
-        logger.exception(f"IOError")
+    if not file_methods.check_existence(file_name, 'file'):
+        raise OSError(f"{file_name} does not exist")
+    with open(file_name) as f:
+        tags = list(filter(None, [line.strip() for line in f if not line.startswith("#")]))
+        return tags
 
 
 def create_parser():
@@ -102,16 +61,16 @@ def get_posts(settings, tag):
     3. calls update_posts from data_methods.py to update the id-list with the ids of newly downloaded posts.
     """
     file_path = file_methods.download_posts(settings, tag)
-    log = ()
+    number_scraped = ()
     if file_path:
         new_data = data_methods.extract_posts(settings, file_path, tag)
         if new_data:
             data_file = os.path.join(settings["data"], tag, settings["posts"], settings["data_file"])
             data_methods.update_posts(data_file, "file", new_data[1])
-            log = data_methods.update_posts(settings["post_ids"], "file", new_data[0], tag)
+            number_scraped = data_methods.update_posts(settings["post_ids"], "file", new_data[0], tag)
         file_methods.delete_file(file_path, "file")
     
-    return log
+    return number_scraped
 
 
 
@@ -122,16 +81,16 @@ def get_videos(settings, tag):
     3. calls update_videos from data_methods.py to update the id-list with the ids of newly downloaded videos.
     4. the clean_video_files function deletes the residual video folder after the data processing 
     """
-    log = ()
+    number_scraped = ()
     download_list = file_methods.download_videos(settings, tag)
     if download_list:
         new_data = data_methods.extract_videos(settings, tag, download_list)
         if new_data:
-            log = data_methods.update_videos(settings, new_data, tag)
+            number_scraped = data_methods.update_videos(settings, new_data, tag)
         else:
             file_methods.clean_video_files(settings, tag)
 
-    return log
+    return number_scraped
 
 
 
@@ -143,7 +102,7 @@ def get_data(hashtags, download_data_type):
     counter = 0
     total_hashtags = len(hashtags)
     total_hashtags_offset = total_hashtags - 1
-    log_data = []
+    scraped_summary_list = []
    
     if download_data_type["posts"]:
         settings = set_download_settings(download_data_type)
@@ -153,8 +112,8 @@ def get_data(hashtags, download_data_type):
             file_methods.check_file(os.path.join(settings["data"], tag, settings["posts"], settings["data_file"]), "file")
             res = get_posts(settings, tag)
             if res:
-                log = ( res[0], ( "posts", res[1] ) )
-                log_data.append(log)
+                number_scraped = ( res[0], ( "posts", res[1] ) )
+                scraped_summary_list.append(number_scraped)
                 data_methods.print_total(settings["post_ids"], tag, "posts")
             
             counter += 1
@@ -171,14 +130,14 @@ def get_data(hashtags, download_data_type):
             res = get_videos(settings, tag)
             if res:
                 res = ( res[0], ( "videos", res[1]))
-                log_data.append(res)
+                scraped_summary_list.append(res)
                 data_methods.print_total(settings["video_ids"], tag, "videos")
  
             counter += 1
             if counter < total_hashtags_offset:
                 time.sleep(settings["sleep"])
 
-    return log_data
+    return scraped_summary_list
 
 
 if __name__ == "__main__":
@@ -197,29 +156,15 @@ if __name__ == "__main__":
         file_name = args.f
         hashtags = get_hashtag_list(file_name)
 
-    print(hashtags)
+    logger.info(f"Hashtags to scrape: {hashtags}")
     if not hashtags:
-        logger.exception("No hashtags were given, please use either -t option or -f to provide hashtags.")
+        raise ValueError("No hashtags were specified: please use either the -t flag to specify a sspace-separated list of one or more hashtags as a command-line argument, or use the -f flag to specify a text file of newline-separated hashtags.")
 
-    if (args.p and args.v):
-        download_data_type = {
-                "posts": True,
-                "videos": True
-                }
-    elif args.p:
-        download_data_type = {
-                "posts": True,
-                "videos": False
-                }
-    else:
-        download_data_type = {
-                "posts": False,
-                "videos": True
+    download_data_type = {
+                "posts": args.p,
+                "videos": args.v
                 }
    
-    try: 
-        log_data = get_data(hashtags, download_data_type)
-        if log_data:
-            file_methods.log_writer(log_data)
-    except:
-        logger.exception(f"ERROR")
+    scraped_summary_list = get_data(hashtags, download_data_type)
+    if scraped_summary_list:
+        file_methods.log_writer(scraped_summary_list)
