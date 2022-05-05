@@ -110,9 +110,10 @@ Assume we want to analyze the top 20 occurring hashtags in the downloaded posts 
     `python3 hashtag_frequencies.py -p ../data/london/posts/data.json 20`
     
     which will produce a figure similar to that shown below:
-
-    ![Top 20 most frequent hashtags in posts containing the #london hashtag!](https://user-images.githubusercontent.com/72805812/155770710-0d167bbb-4c44-44d2-ba1c-fa57026afea8.png)
-
+    <p align="center">
+        <img src="https://user-images.githubusercontent.com/18430739/166878928-d146b352-b68c-4ab4-bd2c-feb2f0140df9.png" height="500" alt="Top 20 most frequent common hashtags in posts containing the #london hashtag">
+    </p>
+    
     Clearly, the highest occurrence will be of the `#london` hashtag, as all posts in the file `data/london/posts/data.json` contain the hashtag `#london`.
 
 - The results can be displayed in tabular form by executing the following command:
