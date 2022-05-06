@@ -22,17 +22,17 @@ You should now be ready to start using the tool.
 ## About the tool
 ### Command-line arguments
 ```
-$ python run_downloader.py -h
+python3 run_downloader.py --help
 usage: run_downloader.py [-h] [-t [T [T ...]]] [-f F] [-p] [-v]
 
 Download the tiktoks for the requested hashtags
 
 optional arguments:
--h, --help      show this help message and exit
--t [T [T ...]]  List of hashtags
--f F            File name with the list of hashtags
--p              Download posts
--v              Download videos
+  -h, --help      show this help message and exit
+  -t [T [T ...]]  List of hashtags to scrape
+  -f F            File name containing list of hashtags to scrape
+  -p              Download post data
+  -v              Download video files
 ```
 
 ### Structure of output data
@@ -90,11 +90,11 @@ Note that video downloading is a time and data rate consuming task, as a result 
 The script `hashtag_frequencies.py` analyzes the frequencies of top occurring hashtags in a given set of posts.
 
 ```
-python hashtag_frequencies.py --help
-usage: hashtag_frequencies.py [-h] [-p] [-d] input_file n
+$ python3 hashtag_frequencies.py --help
+usage: hashtag_frequencies.py [-h] [-p] [-d] hashtag n
 
 positional arguments:
-  input_file   The json hashtag file name
+  hashtag      The hashtag of scraped posts to analyze
   n            The number of top n occurrences
 
 optional arguments:
@@ -107,7 +107,7 @@ Assume we want to analyze the 20 most frequently occurring hashtags in the downl
 
 - The results can be plotted and saved as a PNG file by executing the following command: 
 
-    `python3 hashtag_frequencies.py -p ../data/london/posts/data.json 20`
+    `python3 hashtag_frequencies.py london 20 -p`
     
     which will produce a figure similar to that shown below:
     <p align="center">
@@ -118,31 +118,31 @@ Assume we want to analyze the 20 most frequently occurring hashtags in the downl
 
 - The results can be displayed in tabular form by executing the following command:
 
-    `python3 hashtag_frequencies.py -d ../data/london/posts/data.json 20`
+    `python3 hashtag_frequencies.py london 20 -d`
 
     which will produce a terminal output similar to the following:
     ```
-    Rank     Hashtag         Occurrences     Frequency
-    0        london          962             1.0            
-    1        fyp             493             0.5124740124740125
-    2        uk              238             0.24740124740124741
-    3        foryou          223             0.23180873180873182
-    4        foryoupage      186             0.19334719334719336
-    5        viral           177             0.183991683991684
-    6        fypシ            85              0.08835758835758836
-    7        funny           55              0.057172557172557176
-    8        xyzbca          52              0.05405405405405406
-    9        england         45              0.04677754677754678
-    10       british         44              0.04573804573804574
-    11       trending        39              0.04054054054054054
-    12       fy              33              0.034303534303534305
-    13       comedy          32              0.033264033264033266
-    14       roadman         28              0.029106029106029108
-    15       4u              27              0.028066528066528068
-    16       usa             26              0.02702702702702703
-    17       tiktok          26              0.02702702702702703
-    18       travel          21              0.02182952182952183
-    19       america         20              0.02079002079002079
+    Rank     Hashtag                        Occurrences     Frequency
+    0        london                         960             1.0000
+    1        fyp                            494             0.5146
+    2        uk                             238             0.2479
+    3        foryou                         221             0.2302
+    4        foryoupage                     184             0.1917
+    5        viral                          179             0.1865
+    6        fypシ                           84              0.0875
+    7        funny                          56              0.0583
+    8        xyzbca                         51              0.0531
+    9        british                        45              0.0469
+    10       england                        44              0.0458
+    11       trending                       40              0.0417
+    12       fy                             33              0.0344
+    13       comedy                         32              0.0333
+    14       roadman                        28              0.0292
+    15       4u                             27              0.0281
+    16       usa                            26              0.0271
+    17       tiktok                         26              0.0271
+    18       travel                         21              0.0219
+    19       america                        20              0.0208
     ```
 
     The `Frequency` column shows the ratio of the occurrence to the total number of downloaded posts.
