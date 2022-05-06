@@ -81,7 +81,7 @@ def get_occurrences(filename: str, n: int = 1) -> Dict[str, Any]:
 
 def plot(n: int, occs: dict, img_folder: str):
     """Save plot of common hashtags as bar chart to file."""
-    y_pos = list(reversed(range(len(occs[0]) - 1)))
+    y_pos = list(reversed(range(len(occs["top_n"][0]) - 1)))
     max_count = occs["top_n"][1][0]
     freqs = [count / max_count * 100 for count in occs["top_n"][1][1:]]
     labels = occs["top_n"][0][1:]
