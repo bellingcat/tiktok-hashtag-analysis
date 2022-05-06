@@ -143,6 +143,7 @@ Assume we want to analyze the 20 most frequently occurring hashtags in the downl
     17       tiktok                         26              0.0271
     18       travel                         21              0.0219
     19       america                        20              0.0208
+    Total posts: 960
     ```
 
     The `Frequency` column shows the ratio of the occurrence to the total number of downloaded posts.
