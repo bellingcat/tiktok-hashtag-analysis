@@ -136,7 +136,7 @@ def log_writer(log_data: List[Tuple[str, Tuple[str, int]]]):
     now_str = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
     data = {now_str: scraped_summary_dict}
 
-    logger.info(f"Logged post data: {data}")
+    logger.debug(f"Logged post data: {data}")
     logger.info(f"Successfully scraped {total} total entries")
 
 

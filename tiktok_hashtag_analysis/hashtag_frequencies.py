@@ -12,7 +12,7 @@ import argparse
 from datetime import datetime
 import warnings
 from typing import List, Tuple, Dict, Any
-import logging, logging.config
+import logging
 
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
@@ -23,8 +23,7 @@ from global_data import IMAGES, FILES
 
 warnings.filterwarnings("ignore", message="Glyph (.*) missing from current font")
 sns.set_theme(style="darkgrid")
-logging.config.fileConfig("../logging.config")
-logger = logging.getLogger("Logger")
+logger = logging.getLogger()
 
 
 def create_parser() -> argparse.ArgumentParser:

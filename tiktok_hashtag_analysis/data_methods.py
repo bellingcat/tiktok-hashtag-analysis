@@ -2,12 +2,11 @@
 """
 
 from typing import NamedTuple, List, Tuple, Set, Optional, Dict, Any
-import logging, logging.config
+import logging
 
 import file_methods
 
-logging.config.fileConfig("../logging.config")
-logger = logging.getLogger("Logger")
+logger = logging.getLogger()
 
 
 class Diff(NamedTuple):

@@ -10,7 +10,7 @@
 import os
 import time
 import argparse
-import logging, logging.config
+import logging
 from typing import List, Tuple, Dict, Any, Optional
 from tempfile import TemporaryDirectory
 
@@ -18,8 +18,7 @@ import global_data
 import file_methods
 import data_methods
 
-logging.config.fileConfig("../logging.config")
-logger = logging.getLogger("Logger")
+logger = logging.getLogger()
 
 
 def create_parser() -> argparse.ArgumentParser:
