@@ -31,9 +31,10 @@ def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "hashtag",
+        type=str,
         help="The hashtag of scraped posts to analyze",
     )
-    parser.add_argument("n", help="The number of top n occurrences", type=int)
+    parser.add_argument("n", type=int, help="The number of top n occurrences")
     parser.add_argument(
         "-p", "--plot", help="Plot the occurrences", action="store_true"
     )
@@ -121,6 +122,7 @@ def print_occurrences(occs):
         ratio = value / total_posts
         print("{:<8} {:<30} {:<15} {:.4f}".format(row_number, key, value, ratio))
         row_number += 1
+    print(f"Total posts: {total_posts}")
 
 
 if __name__ == "__main__":
@@ -138,7 +140,7 @@ if __name__ == "__main__":
     )
     if not check_existence(input_file, "file"):
         raise FileNotFoundError(
-            f"File {input_file}) for specified argument `hashtag` ({args.hashtag}) does not exist"
+            f"File ({input_file}) for specified argument `hashtag` ({args.hashtag}) does not exist."
         )
 
     base = os.path.splitext(input_file)[0]
