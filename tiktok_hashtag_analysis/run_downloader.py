@@ -18,7 +18,8 @@ import global_data
 import file_methods
 import data_methods
 
-logger = logging.getLogger()
+logging.config.fileConfig("../logging.config")
+logger = logging.getLogger("Logger")
 
 
 def create_parser() -> argparse.ArgumentParser:
