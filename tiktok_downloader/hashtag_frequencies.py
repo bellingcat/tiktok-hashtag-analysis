@@ -79,7 +79,7 @@ def get_occurrences(filename: str, n: int = 1) -> Dict[str, Any]:
     return occs
 
 
-def plot(n: int, occs: dict, img_folder: str):
+def plot(occs: dict, img_folder: str):
     """Save plot of common hashtags as bar chart to file."""
     y_pos = list(reversed(range(len(occs["top_n"][0]) - 1)))
     max_count = occs["top_n"][1][0]
@@ -113,13 +113,13 @@ def print_occurrences(occs):
     row_number = 0
     total_posts = occs["total"]
     print(
-        "{:<8} {:<15} {:<15} {:<15}".format(
+        "{:<8} {:<30} {:<15} {:<15}".format(
             "Rank", "Hashtag", "Occurrences", "Frequency"
         )
     )
     for key, value in zip(occs["top_n"][0], occs["top_n"][1]):
         ratio = value / total_posts
-        print("{:<8} {:<15} {:<15} {:<15}".format(row_number, key, value, ratio))
+        print("{:<8} {:<30} {:<15} {:.4f}".format(row_number, key, value, ratio))
         row_number += 1
 
 
@@ -145,6 +145,6 @@ if __name__ == "__main__":
     path = f"./{base}_sorted_hashtags.csv"
     occs = get_occurrences(input_file, args.n)
     if args.plot:
-        plot(args.n, occs, img_folder)
+        plot(occs, img_folder)
     else:
         print_occurrences(occs)
