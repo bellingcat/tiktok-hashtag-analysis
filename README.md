@@ -22,17 +22,17 @@ You should now be ready to start using the tool.
 ## About the tool
 ### Command-line arguments
 ```
-$ python run_downloader.py -h
+python3 run_downloader.py --help
 usage: run_downloader.py [-h] [-t [T [T ...]]] [-f F] [-p] [-v]
 
 Download the tiktoks for the requested hashtags
 
 optional arguments:
--h, --help      show this help message and exit
--t [T [T ...]]  List of hashtags
--f F            File name with the list of hashtags
--p              Download posts
--v              Download videos
+  -h, --help      show this help message and exit
+  -t [T [T ...]]  List of hashtags to scrape
+  -f F            File name containing list of hashtags to scrape
+  -p              Download post data
+  -v              Download video files
 ```
 
 ### Structure of output data
@@ -90,11 +90,11 @@ Note that video downloading is a time and data rate consuming task, as a result 
 The script `hashtag_frequencies.py` analyzes the frequencies of top occurring hashtags in a given set of posts.
 
 ```
-python hashtag_frequencies.py --help
-usage: hashtag_frequencies.py [-h] [-p] [-d] input_file n
+$ python3 hashtag_frequencies.py --help
+usage: hashtag_frequencies.py [-h] [-p] [-d] hashtag n
 
 positional arguments:
-  input_file   The json hashtag file name
+  hashtag      The hashtag of scraped posts to analyze
   n            The number of top n occurrences
 
 optional arguments:
@@ -107,7 +107,7 @@ Assume we want to analyze the 20 most frequently occurring hashtags in the downl
 
 - The results can be plotted and saved as a PNG file by executing the following command: 
 
-    `python3 hashtag_frequencies.py -p ../data/london/posts/data.json 20`
+    `python3 hashtag_frequencies.py london 20 -p`
     
     which will produce a figure similar to that shown below:
     <p align="center">
@@ -118,7 +118,7 @@ Assume we want to analyze the 20 most frequently occurring hashtags in the downl
 
 - The results can be displayed in tabular form by executing the following command:
 
-    `python3 hashtag_frequencies.py -d ../data/london/posts/data.json 20`
+    `python3 hashtag_frequencies.py london 20 -d`
 
     which will produce a terminal output similar to the following:
     ```

@@ -1,27 +1,30 @@
 """Utility functions that perform data processing related tasks.
 """
 
-from typing import NamedTuple, List, Tuple, Set, Optional, Union, Dict, Any
-import logging, logging.config
+from typing import NamedTuple, List, Tuple, Set, Optional, Dict, Any
+import logging
 
 import file_methods
 
-logging.config.fileConfig("../logging.config")
-logger = logging.getLogger("Logger")
+logger = logging.getLogger()
 
 
 class Diff(NamedTuple):
+    """Keep track of scraped post IDs and whether previously-scraped posts have been filtered."""
+
     ids: Set[str]
     filter_posts: bool
 
 
 class Total(NamedTuple):
+    """Keep track of number of total and number of unique scraped posts."""
+
     total: int
     unique: int
 
 
 def get_difference(tag: str, file_name: str, ids: List[str]) -> Optional[Diff]:
-    """Find TikTok posts that haven't already been scraped.
+    """Find TikTok post IDs that haven't previously been scraped.
 
     Filter out the new posts for the hashtag `tag` by comparing the list of
     post IDs contained in `filename` to the list of newly downloaded IDs
@@ -52,10 +55,11 @@ def get_difference(tag: str, file_name: str, ids: List[str]) -> Optional[Diff]:
 
 def extract_posts(
     settings: Dict[Any, Any], file_name: str, tag: str
-) -> Optional[Tuple[List[str], List[str]]]:
-    """
+) -> Optional[Tuple[List[str], List[Dict]]]:
+    """Find TikTok posts that haven't previously been scraped.
 
-    Takes the downloaded file by the tiktok-scraper that contains the posts, and returns the new posts after comparing it the list of posts (from the file ids/post_ids.json) already downloaded.
+    Compares the file downloaded by tiktok-scraper to the list of
+    previously-scraped posts (from the file ids/post_ids.json).
     """
     ids = []
     posts = []
@@ -85,8 +89,10 @@ def extract_posts(
 
 
 def extract_videos(settings: dict, tag: str, download_list: List[str]) -> List[str]:
-    """
-    Tiktok-scraper downloads the videos and puts them in a folder - the list of ids of the downloaded videos is fed to this function as download_list. The function returns the set of new videos after comparing it the list of videos (from the file ids/videos_ids.json) already downloaded.
+    """Find TikTok videos that haven't previously been scraped.
+
+    Compares the file downloaded by tiktok-scraper to the list of
+    previously-scraped videos (from the file ids/video_ids.json).
     """
     status = file_methods.check_existence(settings["video_ids"], "file")
     if not status:
@@ -104,10 +110,10 @@ def extract_videos(settings: dict, tag: str, download_list: List[str]) -> List[s
 
 
 def update_posts(
-    file_path: str, file_type: str, new_data: List[str], tag: str = None
+    file_path: str, file_type: str, new_data: List[Any], tag: str = None
 ) -> Optional[Tuple[str, int]]:
-    """
-    Updates the list of post ids (in the file ids/post_ids.json) with the ids of the new posts.
+    """Update the file containing scraped post IDs (`ids/post_ids.json`) with
+    the IDs of the recently scraped posts.
     """
     status = file_methods.check_existence(file_path, file_type)
     if not tag:
@@ -121,8 +127,8 @@ def update_posts(
 def update_videos(
     settings: Dict[str, Any], new_data: List[str], tag: str
 ) -> Tuple[str, int]:
-    """
-    Updates the list of video ids (in the file ids/video_ids.json) with the ids of the new videos.
+    """Update the file containing video IDs (`ids/video_ids.json`) with the IDs
+    of the recently scraped videos.
     """
     file_path = settings["video_ids"]
     file_methods.check_file(file_path, "file")
@@ -132,12 +138,10 @@ def update_videos(
 
 
 def get_total_posts(file_path: str, tag: str) -> Total:
-    """
-    Returns total count of ids in a id list along with the number of unique ids among them.
-    """
+    """Count number of total scraped posts and number of unique scraped posts."""
     status = file_methods.check_existence(file_path, "file")
     if not status:
-        raise OSError("{file_path} not found!")
+        raise OSError(f"{file_path} not found!")
     else:
         data = file_methods.get_data(file_path)
         total_posts = len(data[tag])
@@ -147,9 +151,7 @@ def get_total_posts(file_path: str, tag: str) -> Total:
 
 
 def print_total(file_path: str, tag: str, data_type: str):
-    """
-    Prints the total count for posts or videos for a hashtag. Calls the function get_total_posts for sanity check that there are no repeating ids in the id lists.
-    """
+    """Print number of total and unique scraped posts, warn if any non-unique posts."""
     total = get_total_posts(file_path, tag)
     if total.total == total.unique:
         logger.info(f"Scraped {total.total} {data_type} containing the hashtag '{tag}'")

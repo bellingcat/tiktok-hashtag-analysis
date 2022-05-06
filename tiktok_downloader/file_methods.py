@@ -15,9 +15,7 @@ logger = logging.getLogger()
 
 
 def create_file(name: str, file_type: str):
-    """
-    Creates a file or directory.
-    """
+    """Create a file or directory."""
     if file_type == "dir":
         os.makedirs(name, mode=0o777)
     elif file_type == "file":
@@ -28,9 +26,7 @@ def create_file(name: str, file_type: str):
 
 
 def check_existence(file_path: str, file_type: str):
-    """
-    Checks the existence of a file or a directory. If not found, returns False, else returns True.
-    """
+    """Check if a file or a directory exists."""
     if file_type == "file":
         return os.path.isfile(file_path)
     elif file_type == "dir":
@@ -40,19 +36,20 @@ def check_existence(file_path: str, file_type: str):
 
 
 def check_file(file_path: str, file_type: str):
-    """
-    Creates a file or directory, if not found. Else, returns nothing.
-    """
+    """If path does not exist, creates a file or directory."""
     status = check_existence(file_path, file_type)
     if not status:
         create_file(file_path, file_type)
 
 
-def download_posts(settings: dict, tag: str):
-    """
-    Runs the tiktok-scraper command to download posts for a given hashtag.
-    Returns the path to the downloaded file of posts. If no file was downloaded, prints the error and returns nothing in order to move on.
-    os.chdir is used to execute shell commands in the right folders and then reused to come back to the original folder of execution of run_downloader script.
+def download_posts(settings: Dict, tag: str):
+    """Run the tiktok-scraper command to download posts for a given hashtag.
+
+    Returns the path to the downloaded file of posts. If no file was downloaded,
+    prints the error and returns nothing in order to move on.
+
+    os.chdir is used to execute shell commands in the correct folder and then
+    reused to return to the original folder of execution of run_downloader script.
     """
     path = os.path.join(settings["data"], tag, settings["posts"])
     os.chdir(path)
@@ -69,11 +66,16 @@ def download_posts(settings: dict, tag: str):
         os.chdir("../../../tiktok_downloader")
 
 
-def download_videos(settings: dict, tag: str):
-    """
-    Runs the tiktok-scraper command to download videos for a given hashtag. Note that all the videos are downloaded that are returned by the tiktok api and as a result, its a time and data consuming process.
-    The list of downloaded video ids is constucted and returned if the downloaded folder contains at least 1 video.
-    os.chdir is used to execute shell commands in the right folders and then reused to come back to the original folder of execution of run_downloader script.
+def download_videos(settings: Dict, tag: str):
+    """Run the tiktok-scraper command to download videos for a given hashtag.
+
+    Note that all the videos are downloaded that are returned by the TikTok API,
+    making this a time- and data-intensive process.
+    The list of downloaded video IDs is constucted and returned if the
+    downloaded folder contains at least 1 video.
+
+    os.chdir is used to execute shell commands in the correct folder and then
+    reused to return to the original folder of execution of run_downloader script.
     """
     path = os.path.join(settings["data"], tag, settings["videos"])
     os.chdir(path)
@@ -95,27 +97,31 @@ def download_videos(settings: dict, tag: str):
 
 
 def get_data(file_path: str) -> Any:
-    """
-    Reads the json file and retuns the read data.
-    """
+    """Read a JSON file and return the read data."""
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data
 
 
-def dump_data(file_path: str, data: List[dict]):
-    """
-    Writes the data to the json file.
-    """
+def dump_data(file_path: str, data: Any):
+    """Write data to a JSON file."""
     with open(file_path, "w", encoding="utf-8") as f:
         json.dump(data, f)
 
 
 def log_writer(log_data: List[Tuple[str, Tuple[str, int]]]):
-    """
-    Creates the dictionary of total downloads (posts and videos) per hashtag.
-    Example : { timetamp : { hashtag : { videos : number_of_new_videos , posts : number_of_new_posts } } }
-    Writes the dictionary to the log file (logs/log.json).
+    """Create the dictionary of total downloads (posts and videos) per hashtag.
+
+    Example : {
+        timetamp : {
+            hashtag : {
+                videos : number_of_new_videos ,
+                posts : number_of_new_posts
+            }
+        }
+    }
+
+    Writes the dictionary to the log file (`logs/log.json`).
     """
 
     total = 0
@@ -141,9 +147,7 @@ def log_writer(log_data: List[Tuple[str, Tuple[str, int]]]):
 def id_writer(
     file_path: str, new_data: List[str], tag: str, status: bool
 ) -> Tuple[str, int]:
-    """
-    Writes the list of new ids to the post_ids or video_ids files.
-    """
+    """Write the list of new ids to the post_ids or video_ids file."""
 
     total = len(new_data)
     if status:
@@ -165,9 +169,9 @@ def id_writer(
     return number_scraped
 
 
-def post_writer(file_path: str, new_data: List[str], status: bool):
-    """
-    Writes the new posts in the post file of the given hashtag (/data/{hashtag}/posts/data.json)
+def post_writer(file_path: str, new_data: List[Dict], status: bool):
+    """Write the new posts in the post file of the given hashtag
+    (`/data/{hashtag}/posts/data.json`).
     """
     total = len(new_data)
     if status:
@@ -185,9 +189,7 @@ def post_writer(file_path: str, new_data: List[str], status: bool):
 
 
 def delete_file(file_path: str, file_type: str):
-    """
-    Deletes the directory or the file.
-    """
+    """Delete a directory or file."""
     if not check_existence(file_path, file_type):
         raise OSError(f"Attempt to delete file failed: {file_path} does not exist")
     elif file_type == "file":
@@ -201,8 +203,7 @@ def delete_file(file_path: str, file_type: str):
 
 
 def clean_video_files(settings: dict, tag: str, new_data: Optional[List[str]] = None):
-    """
-    Moves the new videos from the tiktok-scraper video folder to /data/{hashtag}/videos/
+    """Move the new videos from the tiktok-scraper video folder to `/data/{hashtag}/videos/`.
     Deletes the residual tiktok-scraper video folder.
     """
     if new_data:

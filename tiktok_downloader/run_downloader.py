@@ -17,28 +17,27 @@ import global_data
 import file_methods
 import data_methods
 
-
-logging.config.fileConfig("../logging.config")
-logger = logging.getLogger("Logger")
+logger = logging.getLogger()
 
 
 def create_parser() -> argparse.ArgumentParser:
-    """
-    Creates the parser and the arguments for the user input.
-    """
+    """Create the parser and the arguments for the user input."""
     parser = argparse.ArgumentParser(
         description="Download the tiktoks for the requested hashtags"
     )
 
-    parser.add_argument("-t", type=str, nargs="*", help="List of hashtags")
-    parser.add_argument("-f", type=str, help="File name with the list of hashtags")
-    parser.add_argument("-p", action="store_true", help="Download posts")
-    parser.add_argument("-v", action="store_true", help="Download videos")
+    parser.add_argument("-t", type=str, nargs="*", help="List of hashtags to scrape")
+    parser.add_argument(
+        "-f", type=str, help="File name containing list of hashtags to scrape"
+    )
+    parser.add_argument("-p", action="store_true", help="Download post data")
+    parser.add_argument("-v", action="store_true", help="Download video files")
 
     return parser
 
 
 def get_hashtag_list(file_name: str) -> List[str]:
+    """Extract list of newline-separated hashtags from text file."""
     if not file_methods.check_existence(file_name, "file"):
         raise OSError(f"{file_name} does not exist")
     with open(file_name) as f:
@@ -49,10 +48,7 @@ def get_hashtag_list(file_name: str) -> List[str]:
 
 
 def set_download_settings(download_data_type: Dict[str, bool]) -> Dict[str, Any]:
-    """
-    Loads the constants from global_data into the dict called settings and returns it.
-    Purpose - easy access to global constants by various functions.
-    """
+    """Load the constants from global_data module into the `settings` dict."""
     settings = {
         "data": global_data.FILES["data"],
         "ids": global_data.FILES["ids"],
@@ -73,10 +69,13 @@ def set_download_settings(download_data_type: Dict[str, bool]) -> Dict[str, Any]
 
 
 def get_posts(settings: dict, tag: str) -> Optional[Tuple[str, int]]:
-    """
-    1. calls download_posts in file_methods.py to get the posts for a given hashtag
-    2. calls extract_posts from data_methods.py to extract new posts if any
-    3. calls update_posts from data_methods.py to update the id-list with the ids of newly downloaded posts.
+    """Scrape trending TikTok post data for the specified hashtag.
+
+    1. Calls `file_methods.download_posts` to scrape the post data for a given hashtag
+    2. Calls `data_methods.extract_posts` to determine which if any posts
+    haven't previouly been downloaded.
+    3. Calls `data_methods.update_posts` to update the ID list with the IDs of
+    newly downloaded posts.
     """
     file_path = file_methods.download_posts(settings, tag)
     number_scraped = None
@@ -96,11 +95,15 @@ def get_posts(settings: dict, tag: str) -> Optional[Tuple[str, int]]:
 
 
 def get_videos(settings: dict, tag: str) -> Optional[Tuple[str, int]]:
-    """
-    1. calls download_videos in file_methods.py to get the videos for a given hashtag
-    2. calls extract_videos from data_methods.py to extract new videos if any
-    3. calls update_videos from data_methods.py to update the id-list with the ids of newly downloaded videos.
-    4. the clean_video_files function deletes the residual video folder after the data processing
+    """Scrape trending TikTok video files for the specified hashtag.
+
+    1. Calls `file_methods.download_videos` to download the video files for a given hashtag
+    2. Calls `data_methods.extract_videos` to determine which if any videos
+    haven't previouly been downloaded.
+    3. Calls `data_methods.update_videos` to update the ID list with the IDs of
+    newly downloaded videos.
+    4. Calls `clean_video_files` function to delete the residual video folder
+    after the data processing.
     """
     number_scraped = None
     download_list = file_methods.download_videos(settings, tag)
@@ -117,10 +120,7 @@ def get_videos(settings: dict, tag: str) -> Optional[Tuple[str, int]]:
 def get_data(
     hashtags: list, download_data_type: Dict[str, bool]
 ) -> List[Tuple[str, Tuple[str, int]]]:
-    """
-    The function checks for the user option "-p", "-v" or both and then
-    triggers the functions get_posts, get_videos or both, respectively.
-    """
+    """Check command-line arguments and scrape posts/videos for specified hashtags."""
     counter = 0
     total_hashtags = len(hashtags)
     total_hashtags_offset = total_hashtags - 1
@@ -176,7 +176,7 @@ if __name__ == "__main__":
 
     if not (args.t or args.f):
         parser.error(
-            "No hashtags were given, please use either the `-t` flag or the `-f` flag to provide hashtags."
+            "No hashtags were given, please use either the `-t` flag or the `-f` flag to specify one or more hashtags."
         )
 
     if not (args.p or args.v):
