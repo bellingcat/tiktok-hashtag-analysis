@@ -92,6 +92,7 @@ def print_occurrences(occs):
         ratio = value / total_posts
         print("{:<8} {:<15} {:<15} {:<15}".format(row_number, key, value, ratio))
         row_number += 1
+    print(f"Total posts: {total_posts}")
 
 
 def save_plot(img_folder):

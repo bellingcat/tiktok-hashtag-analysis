@@ -118,7 +118,7 @@ def log_writer(log_data: list):
     Writes the dictionary to the log file (logs/log.json).
     """
     total = 0
-    scraped_summary_dict: dict
+    scraped_summary_dict: dict = {}
     for hashtag, (data_type, count) in log_data:
         if hashtag in scraped_summary_dict:
             if data_type in scraped_summary_dict[hashtag]:
