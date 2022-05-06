@@ -12,6 +12,7 @@ import time
 import argparse
 import logging, logging.config
 from typing import List, Tuple, Dict, Any, Optional
+from tempfile import TemporaryDirectory
 
 import global_data
 import file_methods
@@ -77,19 +78,19 @@ def get_posts(settings: dict, tag: str) -> Optional[Tuple[str, int]]:
     3. Calls `data_methods.update_posts` to update the ID list with the IDs of
     newly downloaded posts.
     """
-    file_path = file_methods.download_posts(settings, tag)
-    number_scraped = None
-    if file_path:
-        new_data = data_methods.extract_posts(settings, file_path, tag)
-        if new_data:
-            data_file = os.path.join(
-                settings["data"], tag, settings["posts"], settings["data_file"]
-            )
-            data_methods.update_posts(data_file, "file", new_data[1])
-            number_scraped = data_methods.update_posts(
-                settings["post_ids"], "file", new_data[0], tag
-            )
-        file_methods.delete_file(file_path, "file")
+    with TemporaryDirectory() as temp_dir:
+        file_path = file_methods.download_posts(settings, tag, temp_dir)
+        number_scraped = None
+        if file_path:
+            new_data = data_methods.extract_posts(settings, file_path, tag)
+            if new_data:
+                data_file = os.path.join(
+                    settings["data"], tag, settings["posts"], settings["data_file"]
+                )
+                data_methods.update_posts(data_file, "file", new_data[1])
+                number_scraped = data_methods.update_posts(
+                    settings["post_ids"], "file", new_data[0], tag
+                )
 
     return number_scraped
 

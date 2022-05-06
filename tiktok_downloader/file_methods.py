@@ -42,7 +42,7 @@ def check_file(file_path: str, file_type: str):
         create_file(file_path, file_type)
 
 
-def download_posts(settings: Dict, tag: str):
+def download_posts(settings: Dict, tag: str, output_dir: Any):
     """Run the tiktok-scraper command to download posts for a given hashtag.
 
     Returns the path to the downloaded file of posts. If no file was downloaded,
@@ -52,18 +52,16 @@ def download_posts(settings: Dict, tag: str):
     reused to return to the original folder of execution of run_downloader script.
     """
     path = os.path.join(settings["data"], tag, settings["posts"])
-    os.chdir(path)
-    tiktok_command = f"tiktok-scraper hashtag {tag} -t 'json'"
+    os.makedirs(path, exist_ok=True)
+    tiktok_command = f"tiktok-scraper hashtag {tag} -t 'json' --filepath {output_dir}"
     output = subprocess.check_output(tiktok_command, shell=True, encoding="utf-8")
     new_file = output.split()[-1]
     if "json" in new_file:
-        os.chdir("../../../tiktok_downloader")
         return new_file
     else:
         logger.warn(
             f"Something's wrong with what is returned by tiktok-scraper for the hashtag {tag} - *{new_file}* is not a json file.\n\ntiktok-scraper returned {output}"
         )
-        os.chdir("../../../tiktok_downloader")
 
 
 def download_videos(settings: Dict, tag: str):
@@ -78,21 +76,19 @@ def download_videos(settings: Dict, tag: str):
     reused to return to the original folder of execution of run_downloader script.
     """
     path = os.path.join(settings["data"], tag, settings["videos"])
-    os.chdir(path)
-    tiktok_command = f"tiktok-scraper hashtag {tag} -d"
+    os.makedirs(path, exist_ok=True)
+    tiktok_command = f"tiktok-scraper hashtag {tag} -d --filepath {path}"
     result = subprocess.check_output(tiktok_command, shell=True)
-    downloaded_list_tmp = os.listdir(f"./#{tag}")
+    downloaded_list_tmp = os.listdir(os.path.join(path, f"#{tag}"))
     if downloaded_list_tmp:
         downloaded_list = []
         for file in downloaded_list_tmp:
             file = file.split(".")[0]
             downloaded_list.append(file)
 
-        os.chdir("../../../tiktok_downloader")
         return downloaded_list
     else:
         logger.warn(f"No video files were downloaded for the hashtag {tag}.")
-        os.chdir("../../../tiktok_downloader")
         shutil.rmtree(settings["videos_delete"])
 
 
