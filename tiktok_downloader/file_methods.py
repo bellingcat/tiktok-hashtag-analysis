@@ -1,17 +1,17 @@
+"""Utility functions that operate on files, such as writing to reading from a file.
+"""
+
 import os
 import json
 import subprocess
 from datetime import datetime
 import shutil
+from typing import Tuple, List, Optional, Dict, Any
 
 import logging, logging.config
 
 logging.config.fileConfig("../logging.config")
-logger = logging.getLogger("Logger")
-
-"""
-The file contains the functions that operate on files, such as writing or reading from files etc.
-"""
+logger = logging.getLogger()
 
 
 def create_file(name: str, file_type: str):
@@ -94,16 +94,16 @@ def download_videos(settings: dict, tag: str):
         shutil.rmtree(settings["videos_delete"])
 
 
-def get_data(file_path: str) -> list:
+def get_data(file_path: str) -> Any:
     """
     Reads the json file and retuns the read data.
     """
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
-        return data
+    return data
 
 
-def dump_data(file_path: str, data: list):
+def dump_data(file_path: str, data: List[dict]):
     """
     Writes the data to the json file.
     """
@@ -111,14 +111,15 @@ def dump_data(file_path: str, data: list):
         json.dump(data, f)
 
 
-def log_writer(log_data: list):
+def log_writer(log_data: List[Tuple[str, Tuple[str, int]]]):
     """
     Creates the dictionary of total downloads (posts and videos) per hashtag.
     Example : { timetamp : { hashtag : { videos : number_of_new_videos , posts : number_of_new_posts } } }
     Writes the dictionary to the log file (logs/log.json).
     """
+
     total = 0
-    scraped_summary_dict: dict
+    scraped_summary_dict = {}  # type: Dict[str, Dict[str, int]]
     for hashtag, (data_type, count) in log_data:
         if hashtag in scraped_summary_dict:
             if data_type in scraped_summary_dict[hashtag]:
@@ -130,18 +131,20 @@ def log_writer(log_data: list):
             scraped_summary_dict[hashtag] = {data_type: count}
             total += count
 
-    now = datetime.now()
-    now_str = now.strftime("%d-%m-%Y %H:%M:%S")
+    now_str = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
     data = {now_str: scraped_summary_dict}
 
-    logger.warn(f"Logged post data: {data}")
+    logger.debug(f"Logged post data: {data}")
     logger.info(f"Successfully scraped {total} total entries")
 
 
-def id_writer(file_path: str, new_data: list, tag: str, status: bool) -> tuple:
+def id_writer(
+    file_path: str, new_data: List[str], tag: str, status: bool
+) -> Tuple[str, int]:
     """
     Writes the list of new ids to the post_ids or video_ids files.
     """
+
     total = len(new_data)
     if status:
         try:
@@ -162,7 +165,7 @@ def id_writer(file_path: str, new_data: list, tag: str, status: bool) -> tuple:
     return number_scraped
 
 
-def post_writer(file_path: str, new_data: list, status: bool):
+def post_writer(file_path: str, new_data: List[str], status: bool):
     """
     Writes the new posts in the post file of the given hashtag (/data/{hashtag}/posts/data.json)
     """
@@ -197,7 +200,7 @@ def delete_file(file_path: str, file_type: str):
         raise OSError("{file_type} needs to be either 'file' or 'dir'")
 
 
-def clean_video_files(settings: dict, tag: str, new_data: list = None):
+def clean_video_files(settings: dict, tag: str, new_data: Optional[List[str]] = None):
     """
     Moves the new videos from the tiktok-scraper video folder to /data/{hashtag}/videos/
     Deletes the residual tiktok-scraper video folder.

@@ -1,7 +1,17 @@
+"""Download post data or videos from TikToks containing one or more specified hashtags.
+
+- The "-p" flag specifies that only data from posts is downloaded, no video files
+- The "-v" flag specifies that only video files are downloaded, no post data
+- Specifying both "-p" and "-v" flags downloads both post data and video files
+- The "-t" flag allows the user to specify a list of space-separated hashtags as an argument
+- The "-f" flag allows the user to specify the filename of a text file containing a list of newline-separated hashtags as an argument
+"""
+
 import os
 import time
 import argparse
 import logging, logging.config
+from typing import List, Tuple, Dict, Any, Optional
 
 import global_data
 import file_methods
@@ -12,17 +22,7 @@ logging.config.fileConfig("../logging.config")
 logger = logging.getLogger("Logger")
 
 
-def get_hashtag_list(file_name: str) -> list:
-    if not file_methods.check_existence(file_name, "file"):
-        raise OSError(f"{file_name} does not exist")
-    with open(file_name) as f:
-        tags = list(
-            filter(None, [line.strip() for line in f if not line.startswith("#")])
-        )
-        return tags
-
-
-def create_parser():
+def create_parser() -> argparse.ArgumentParser:
     """
     Creates the parser and the arguments for the user input.
     """
@@ -38,16 +38,27 @@ def create_parser():
     return parser
 
 
-def set_download_settings(download_data_type: str) -> dict:
+def get_hashtag_list(file_name: str) -> List[str]:
+    if not file_methods.check_existence(file_name, "file"):
+        raise OSError(f"{file_name} does not exist")
+    with open(file_name) as f:
+        tags = list(
+            filter(None, [line.strip() for line in f if not line.startswith("#")])
+        )
+        return tags
+
+
+def set_download_settings(download_data_type: Dict[str, bool]) -> Dict[str, Any]:
     """
     Loads the constants from global_data into the dict called settings and returns it.
     Purpose - easy access to global constants by various functions.
     """
-    settings = {}
-    settings["data"] = global_data.FILES["data"]
-    settings["ids"] = global_data.FILES["ids"]
-    settings["sleep"] = global_data.PARAMETERS["sleep"]
-    settings["scraper"] = global_data.PARAMETERS["scraper_attempts"]
+    settings = {
+        "data": global_data.FILES["data"],
+        "ids": global_data.FILES["ids"],
+        "sleep": global_data.PARAMETERS["sleep"],
+        "scraper": global_data.PARAMETERS["scraper_attempts"],
+    }
     file_methods.check_file(f"{settings['data']}/{settings['ids']}", "dir")
     if download_data_type["posts"]:
         settings["posts"] = global_data.FILES["posts"]
@@ -61,14 +72,14 @@ def set_download_settings(download_data_type: str) -> dict:
     return settings
 
 
-def get_posts(settings: dict, tag: str) -> tuple:
+def get_posts(settings: dict, tag: str) -> Optional[Tuple[str, int]]:
     """
     1. calls download_posts in file_methods.py to get the posts for a given hashtag
     2. calls extract_posts from data_methods.py to extract new posts if any
     3. calls update_posts from data_methods.py to update the id-list with the ids of newly downloaded posts.
     """
     file_path = file_methods.download_posts(settings, tag)
-    number_scraped = ()
+    number_scraped = None
     if file_path:
         new_data = data_methods.extract_posts(settings, file_path, tag)
         if new_data:
@@ -84,14 +95,14 @@ def get_posts(settings: dict, tag: str) -> tuple:
     return number_scraped
 
 
-def get_videos(settings: dict, tag: str) -> tuple:
+def get_videos(settings: dict, tag: str) -> Optional[Tuple[str, int]]:
     """
     1. calls download_videos in file_methods.py to get the videos for a given hashtag
     2. calls extract_videos from data_methods.py to extract new videos if any
     3. calls update_videos from data_methods.py to update the id-list with the ids of newly downloaded videos.
     4. the clean_video_files function deletes the residual video folder after the data processing
     """
-    number_scraped = ()
+    number_scraped = None
     download_list = file_methods.download_videos(settings, tag)
     if download_list:
         new_data = data_methods.extract_videos(settings, tag, download_list)
@@ -103,7 +114,9 @@ def get_videos(settings: dict, tag: str) -> tuple:
     return number_scraped
 
 
-def get_data(hashtags: list, download_data_type: str) -> list:
+def get_data(
+    hashtags: list, download_data_type: Dict[str, bool]
+) -> List[Tuple[str, Tuple[str, int]]]:
     """
     The function checks for the user option "-p", "-v" or both and then
     triggers the functions get_posts, get_videos or both, respectively.
@@ -145,10 +158,9 @@ def get_data(hashtags: list, download_data_type: str) -> list:
             )
             settings["videos_delete"] = settings["data"] + f"/{tag}/videos/#{tag}"
             settings["videos_to"] = settings["data"] + f"/{tag}/videos"
-            res = get_videos(settings, tag)
-            if res:
-                res = (res[0], ("videos", res[1]))
-                scraped_summary_list.append(res)
+            _res = get_videos(settings, tag)
+            if _res:
+                scraped_summary_list.append((_res[0], ("videos", _res[1])))
                 data_methods.print_total(settings["video_ids"], tag, "videos")
 
             counter += 1
@@ -164,12 +176,12 @@ if __name__ == "__main__":
 
     if not (args.t or args.f):
         parser.error(
-            "No hashtags were given, please use either -t option or -f to provide hashtags."
+            "No hashtags were given, please use either the `-t` flag or the `-f` flag to provide hashtags."
         )
 
     if not (args.p or args.v):
         parser.error(
-            "No argument given, please specify either -p for posts or -v videos or both."
+            "No argument given, please specify either the `-p` flag to download post data or the `-v` flag to download video files, or both."
         )
 
     if args.t:
@@ -181,7 +193,7 @@ if __name__ == "__main__":
     logger.info(f"Hashtags to scrape: {hashtags}")
     if not hashtags:
         raise ValueError(
-            "No hashtags were specified: please use either the -t flag to specify a sspace-separated list of one or more hashtags as a command-line argument, or use the -f flag to specify a text file of newline-separated hashtags."
+            "No hashtags were specified: please use either the `-t` flag to specify a sspace-separated list of one or more hashtags as a command-line argument, or use the `-f` flag to specify a text file of newline-separated hashtags."
         )
 
     download_data_type = {"posts": args.p, "videos": args.v}
