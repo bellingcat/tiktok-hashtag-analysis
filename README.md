@@ -3,8 +3,9 @@ The tool helps to download posts and videos from TikTok for a given set of hasht
 
 ## Pre-requisites
 1. Make sure you have Python 3.6 or a later version installed
-2. Download and install TikTok scraper: https://github.com/drawrowfly/tiktok-scraper 
-3. (Optional) create and activate a virtual environment for this tool, for example by executing the following command, which creates the `.env` virtual environment in the tool's root directory:
+2. Install node version 16. On mac: do `brew install node` followed by `npm install -g n` and then `n 16`.
+4. Download and install TikTok scraper: https://github.com/drawrowfly/tiktok-scraper 
+5. (Optional) create and activate a virtual environment for this tool, for example by executing the following command, which creates the `.env` virtual environment in the tool's root directory:
 
     `python3 -m venv .env`
 
