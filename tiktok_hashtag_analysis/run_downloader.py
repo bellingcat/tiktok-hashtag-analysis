@@ -192,6 +192,8 @@ if __name__ == "__main__":
         )
     if args.n:
         limiter = args.n
+    else:
+        limiter = 0
     if args.t:
         hashtags = args.t
     elif args.f:
