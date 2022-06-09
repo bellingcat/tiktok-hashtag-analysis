@@ -24,15 +24,21 @@ logger = logging.getLogger()
 def create_parser() -> argparse.ArgumentParser:
     """Create the parser and the arguments for the user input."""
     parser = argparse.ArgumentParser(
-        description="Download the tiktoks for the requested hashtags"
-    )
+        description="Download the tiktoks for the requested hashtags")
 
-    parser.add_argument("-t", type=str, nargs="*", help="List of hashtags to scrape")
-    parser.add_argument(
-        "-f", type=str, help="File name containing list of hashtags to scrape"
-    )
+    parser.add_argument("-t",
+                        type=str,
+                        nargs="*",
+                        help="List of hashtags to scrape")
+    parser.add_argument("-f",
+                        type=str,
+                        help="File name containing list of hashtags to scrape")
     parser.add_argument("-p", action="store_true", help="Download post data")
     parser.add_argument("-v", action="store_true", help="Download video files")
+    parser.add_argument("-n",
+                        type=int,
+                        nargs="?",
+                        help="Limit number of video files")
 
     return parser
 
@@ -43,12 +49,13 @@ def get_hashtag_list(file_name: str) -> List[str]:
         raise OSError(f"{file_name} does not exist")
     with open(file_name) as f:
         tags = list(
-            filter(None, [line.strip() for line in f if not line.startswith("#")])
-        )
+            filter(None,
+                   [line.strip() for line in f if not line.startswith("#")]))
         return tags
 
 
-def set_download_settings(download_data_type: Dict[str, bool]) -> Dict[str, Any]:
+def set_download_settings(
+        download_data_type: Dict[str, bool]) -> Dict[str, Any]:
     """Load the constants from global_data module into the `settings` dict."""
     settings = {
         "data": global_data.FILES["data"],
@@ -84,18 +91,18 @@ def get_posts(settings: dict, tag: str) -> Optional[Tuple[str, int]]:
         if file_path:
             new_data = data_methods.extract_posts(settings, file_path, tag)
             if new_data:
-                data_file = os.path.join(
-                    settings["data"], tag, settings["posts"], settings["data_file"]
-                )
+                data_file = os.path.join(settings["data"], tag,
+                                         settings["posts"],
+                                         settings["data_file"])
                 data_methods.update_posts(data_file, "file", new_data[1])
                 number_scraped = data_methods.update_posts(
-                    settings["post_ids"], "file", new_data[0], tag
-                )
+                    settings["post_ids"], "file", new_data[0], tag)
 
     return number_scraped
 
 
-def get_videos(settings: dict, tag: str) -> Optional[Tuple[str, int]]:
+def get_videos(settings: dict, tag: str,
+               limiter: int) -> Optional[Tuple[str, int]]:
     """Scrape trending TikTok video files for the specified hashtag.
 
     1. Calls `file_methods.download_videos` to download the video files for a given hashtag
@@ -107,11 +114,12 @@ def get_videos(settings: dict, tag: str) -> Optional[Tuple[str, int]]:
     after the data processing.
     """
     number_scraped = None
-    download_list = file_methods.download_videos(settings, tag)
+    download_list = file_methods.download_videos(settings, tag, limiter)
     if download_list:
         new_data = data_methods.extract_videos(settings, tag, download_list)
         if new_data:
-            number_scraped = data_methods.update_videos(settings, new_data, tag)
+            number_scraped = data_methods.update_videos(
+                settings, new_data, tag)
         else:
             file_methods.clean_video_files(settings, tag)
 
@@ -119,8 +127,9 @@ def get_videos(settings: dict, tag: str) -> Optional[Tuple[str, int]]:
 
 
 def get_data(
-    hashtags: list, download_data_type: Dict[str, bool]
-) -> List[Tuple[str, Tuple[str, int]]]:
+        hashtags: list,
+        download_data_type: Dict[str,
+                                 bool]) -> List[Tuple[str, Tuple[str, int]]]:
     """Check command-line arguments and scrape posts/videos for specified hashtags."""
     counter = 0
     total_hashtags = len(hashtags)
@@ -132,12 +141,10 @@ def get_data(
         while counter < total_hashtags:
             tag = hashtags[counter]
             file_methods.check_file(
-                os.path.join(settings["data"], tag, settings["posts"]), "dir"
-            )
+                os.path.join(settings["data"], tag, settings["posts"]), "dir")
             file_methods.check_file(
-                os.path.join(
-                    settings["data"], tag, settings["posts"], settings["data_file"]
-                ),
+                os.path.join(settings["data"], tag, settings["posts"],
+                             settings["data_file"]),
                 "file",
             )
             res = get_posts(settings, tag)
@@ -155,15 +162,14 @@ def get_data(
         while counter < total_hashtags:
             tag = hashtags[counter]
             file_methods.check_file(
-                os.path.join(settings["data"], tag, settings["videos"]), "dir"
-            )
-            settings["videos_delete"] = settings["data"] + f"/{tag}/videos/#{tag}"
+                os.path.join(settings["data"], tag, settings["videos"]), "dir")
+            settings[
+                "videos_delete"] = settings["data"] + f"/{tag}/videos/#{tag}"
             settings["videos_to"] = settings["data"] + f"/{tag}/videos"
-            _res = get_videos(settings, tag)
+            _res = get_videos(settings, tag, limiter)
             if _res:
                 scraped_summary_list.append((_res[0], ("videos", _res[1])))
                 data_methods.print_total(settings["video_ids"], tag, "videos")
-
             counter += 1
             if counter < total_hashtags_offset:
                 time.sleep(settings["sleep"])
@@ -184,7 +190,8 @@ if __name__ == "__main__":
         parser.error(
             "No argument given, please specify either the `-p` flag to download post data or the `-v` flag to download video files, or both."
         )
-
+    if args.n:
+        limiter = args.n
     if args.t:
         hashtags = args.t
     elif args.f:

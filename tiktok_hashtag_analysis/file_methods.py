@@ -54,7 +54,9 @@ def download_posts(settings: Dict, tag: str, output_dir: Any):
     path = os.path.join(settings["data"], tag, settings["posts"])
     os.makedirs(path, exist_ok=True)
     tiktok_command = f"tiktok-scraper hashtag {tag} -t 'json' --filepath {output_dir}"
-    output = subprocess.check_output(tiktok_command, shell=True, encoding="utf-8")
+    output = subprocess.check_output(tiktok_command,
+                                     shell=True,
+                                     encoding="utf-8")
     new_file = output.split()[-1]
     if "json" in new_file:
         return new_file
@@ -64,7 +66,7 @@ def download_posts(settings: Dict, tag: str, output_dir: Any):
         )
 
 
-def download_videos(settings: Dict, tag: str):
+def download_videos(settings: Dict, tag: str, limiter: int = 0):
     """Run the tiktok-scraper command to download videos for a given hashtag.
 
     Note that all the videos are downloaded that are returned by the TikTok API,
@@ -77,7 +79,7 @@ def download_videos(settings: Dict, tag: str):
     """
     path = os.path.join(settings["data"], tag, settings["videos"])
     os.makedirs(path, exist_ok=True)
-    tiktok_command = f"tiktok-scraper hashtag {tag} -d --filepath {path}"
+    tiktok_command = f"tiktok-scraper hashtag {tag} -d -n {limiter} --filepath {path}"
     result = subprocess.check_output(tiktok_command, shell=True)
     downloaded_list_tmp = os.listdir(os.path.join(path, f"#{tag}"))
     if downloaded_list_tmp:
@@ -140,9 +142,8 @@ def log_writer(log_data: List[Tuple[str, Tuple[str, int]]]):
     logger.info(f"Successfully scraped {total} total entries")
 
 
-def id_writer(
-    file_path: str, new_data: List[str], tag: str, status: bool
-) -> Tuple[str, int]:
+def id_writer(file_path: str, new_data: List[str], tag: str,
+              status: bool) -> Tuple[str, int]:
     """Write the list of new ids to the post_ids or video_ids file."""
 
     total = len(new_data)
@@ -187,7 +188,8 @@ def post_writer(file_path: str, new_data: List[Dict], status: bool):
 def delete_file(file_path: str, file_type: str):
     """Delete a directory or file."""
     if not check_existence(file_path, file_type):
-        raise OSError(f"Attempt to delete file failed: {file_path} does not exist")
+        raise OSError(
+            f"Attempt to delete file failed: {file_path} does not exist")
     elif file_type == "file":
         os.remove(file_path)
         logger.debug(f"Successfully deleted {file_path}")
@@ -198,15 +200,16 @@ def delete_file(file_path: str, file_type: str):
         raise OSError("{file_type} needs to be either 'file' or 'dir'")
 
 
-def clean_video_files(settings: dict, tag: str, new_data: Optional[List[str]] = None):
+def clean_video_files(settings: dict,
+                      tag: str,
+                      new_data: Optional[List[str]] = None):
     """Move the new videos from the tiktok-scraper video folder to `/data/{hashtag}/videos/`.
     Deletes the residual tiktok-scraper video folder.
     """
     if new_data:
         for file in new_data:
-            settings["videos_from"] = (
-                settings["data"] + f"/{tag}/videos/#{tag}/{file}.mp4"
-            )
+            settings["videos_from"] = (settings["data"] +
+                                       f"/{tag}/videos/#{tag}/{file}.mp4")
             shutil.move(settings["videos_from"], settings["videos_to"])
 
     shutil.rmtree(settings["videos_delete"])
