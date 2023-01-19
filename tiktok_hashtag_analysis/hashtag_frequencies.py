@@ -5,43 +5,19 @@
 - Specifying the "-d" flag prints the hashtag frequencies on the shell
 - Specifying the "-p" flag plots the hashtag frequencies and saves as a png file
 """
-
-import os
 import json
-import argparse
 from datetime import datetime
 import warnings
-from typing import List, Tuple, Dict, Any
 import logging
-
+from typing import List, Tuple, Dict, Any
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 import seaborn as sns
-
 from file_methods import check_file, check_existence
 from global_data import IMAGES, FILES
 
 warnings.filterwarnings("ignore", message="Glyph (.*) missing from current font")
 sns.set_theme(style="darkgrid")
-logger = logging.getLogger()
-
-
-def create_parser() -> argparse.ArgumentParser:
-    """Create the parser and the arguments for the user input."""
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "hashtag",
-        type=str,
-        help="The hashtag of scraped posts to analyze",
-    )
-    parser.add_argument("n", type=int, help="The number of top n occurrences")
-    parser.add_argument(
-        "-p", "--plot", help="Plot the occurrences", action="store_true"
-    )
-    parser.add_argument(
-        "-d", "--print", help="List top n hashtags", action="store_true"
-    )
-    return parser
 
 
 def get_hashtags(obj: Dict) -> List[Tuple[str, int]]:
@@ -123,30 +99,3 @@ def print_occurrences(occs):
         print("{:<8} {:<30} {:<15} {:.4f}".format(row_number, key, value, ratio))
         row_number += 1
     print(f"Total posts: {total_posts}")
-
-
-if __name__ == "__main__":
-
-    img_folder = IMAGES
-    check_file(img_folder, "dir")
-    parser = create_parser()
-    args = parser.parse_args()
-    if args.n < 1:
-        raise ValueError(
-            f"Specified argument `n` (the number of hashtags to analyze) must be greater than zero, not: {args.n}."
-        )
-    input_file = data_file = os.path.join(
-        FILES["data"], args.hashtag, FILES["posts"], FILES["data_file"]
-    )
-    if not check_existence(input_file, "file"):
-        raise FileNotFoundError(
-            f"File ({input_file}) for specified argument `hashtag` ({args.hashtag}) does not exist."
-        )
-
-    base = os.path.splitext(input_file)[0]
-    path = f"./{base}_sorted_hashtags.csv"
-    occs = get_occurrences(input_file, args.n)
-    if args.plot:
-        plot(occs, img_folder)
-    else:
-        print_occurrences(occs)
