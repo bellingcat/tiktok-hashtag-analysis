@@ -13,11 +13,11 @@ The tool helps to download posts and videos from TikTok for a given set of hasht
     - On Unix-like operating systems (macOS, Linux), this can be done using the command `source .env/bin/activate`
     - On Windows, this can be done using the command `.env\Scripts\activate.bat`
     
-5. Install the Python package dependencies for this tool by executing the command: 
+5. Install the tool with pip: 
 
-    `pip install -r requirements.txt`
+    `pip install git+https://github.com/bellingcat/tiktok-hashtag-analysis`
 
-You should now be ready to start using the tool.
+You should now be ready to start using it.
 
 
 ## About the tool
