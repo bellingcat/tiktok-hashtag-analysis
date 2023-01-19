@@ -9,7 +9,7 @@ logger = logging.getLogger()
 def create_parser() -> argparse.ArgumentParser:
     """Create the parser and the arguments for the user input."""
     parser = argparse.ArgumentParser(description="Analyze hashtags within posts scraped from TikTok.")
-    parser.add_argument("module", help="module to use", choices=['download', 'frequencies'])
+    parser.add_argument("command", help="command to initialize", choices=['download', 'frequencies'])
     parser.add_argument("-t", type=str, nargs="*", help="List of hashtags to scrape (module: run_downloader)")
     parser.add_argument("-f", type=str, help="File name containing list of hashtags to scrape (module: run_downloader)")
     parser.add_argument("-p", action="store_true", help="Download post data (module: run_downloader)")
@@ -25,7 +25,7 @@ def create_parser() -> argparse.ArgumentParser:
 def main():
     parser = create_parser()
     args = parser.parse_args()
-    if args.module == "download":
+    if args.command == "download":
         if not (args.t or args.f):
             parser.error(
                 "No hashtags were given, please use either the `-t` flag or the `-f` flag to specify one or more hashtags.")
@@ -51,7 +51,7 @@ def main():
         scraped_summary_list = get_data(hashtags, download_data_type)
         if scraped_summary_list:
             file_methods.log_writer(scraped_summary_list)
-    elif args.module == "frequencies":
+    elif args.command == "frequencies":
         img_folder = IMAGES
         check_file(img_folder, "dir")
         if args.n < 1:
