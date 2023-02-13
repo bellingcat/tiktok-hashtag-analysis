@@ -4,13 +4,14 @@
 import os
 import json
 import subprocess
+from os import path
 from datetime import datetime
 import shutil
 from typing import Tuple, List, Optional, Dict, Any
 
 import logging, logging.config
 
-logging.config.fileConfig("../logging.config")
+logging.config.fileConfig(path.join(path.dirname(path.abspath(__file__)), 'logging.config'))
 logger = logging.getLogger("Logger")
 
 

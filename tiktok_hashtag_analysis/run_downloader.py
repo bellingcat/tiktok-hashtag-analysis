@@ -9,32 +9,11 @@
 
 import os
 import time
-import argparse
-import logging
 from typing import List, Tuple, Dict, Any, Optional
 from tempfile import TemporaryDirectory
-
-import global_data
-import file_methods
-import data_methods
-
-logger = logging.getLogger()
-
-
-def create_parser() -> argparse.ArgumentParser:
-    """Create the parser and the arguments for the user input."""
-    parser = argparse.ArgumentParser(
-        description="Download the tiktoks for the requested hashtags"
-    )
-
-    parser.add_argument("-t", type=str, nargs="*", help="List of hashtags to scrape")
-    parser.add_argument(
-        "-f", type=str, help="File name containing list of hashtags to scrape"
-    )
-    parser.add_argument("-p", action="store_true", help="Download post data")
-    parser.add_argument("-v", action="store_true", help="Download video files")
-
-    return parser
+import tiktok_hashtag_analysis.global_data
+import tiktok_hashtag_analysis.file_methods as file_methods
+import tiktok_hashtag_analysis.data_methods
 
 
 def get_hashtag_list(file_name: str) -> List[str]:
@@ -74,7 +53,7 @@ def get_posts(settings: dict, tag: str) -> Optional[Tuple[str, int]]:
 
     1. Calls `file_methods.download_posts` to scrape the post data for a given hashtag
     2. Calls `data_methods.extract_posts` to determine which if any posts
-    haven't previouly been downloaded.
+    haven't previously been downloaded.
     3. Calls `data_methods.update_posts` to update the ID list with the IDs of
     newly downloaded posts.
     """
@@ -119,7 +98,7 @@ def get_videos(settings: dict, tag: str) -> Optional[Tuple[str, int]]:
 
 
 def get_data(
-    hashtags: list, download_data_type: Dict[str, bool]
+        hashtags: list, download_data_type: Dict[str, bool]
 ) -> List[Tuple[str, Tuple[str, int]]]:
     """Check command-line arguments and scrape posts/videos for specified hashtags."""
     counter = 0
@@ -169,36 +148,3 @@ def get_data(
                 time.sleep(settings["sleep"])
 
     return scraped_summary_list
-
-
-if __name__ == "__main__":
-    parser = create_parser()
-    args = parser.parse_args()
-
-    if not (args.t or args.f):
-        parser.error(
-            "No hashtags were given, please use either the `-t` flag or the `-f` flag to specify one or more hashtags."
-        )
-
-    if not (args.p or args.v):
-        parser.error(
-            "No argument given, please specify either the `-p` flag to download post data or the `-v` flag to download video files, or both."
-        )
-
-    if args.t:
-        hashtags = args.t
-    elif args.f:
-        file_name = args.f
-        hashtags = get_hashtag_list(file_name)
-
-    logger.info(f"Hashtags to scrape: {hashtags}")
-    if not hashtags:
-        raise ValueError(
-            "No hashtags were specified: please use either the `-t` flag to specify a sspace-separated list of one or more hashtags as a command-line argument, or use the `-f` flag to specify a text file of newline-separated hashtags."
-        )
-
-    download_data_type = {"posts": args.p, "videos": args.v}
-
-    scraped_summary_list = get_data(hashtags, download_data_type)
-    if scraped_summary_list:
-        file_methods.log_writer(scraped_summary_list)
