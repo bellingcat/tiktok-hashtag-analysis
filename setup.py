@@ -1,12 +1,14 @@
 import setuptools
+from tiktok_hashtag_analysis import __version__
 
 with open("README.md", "r", encoding="utf-8") as file:
     long_description = file.read()
 
 setuptools.setup(
     name="tiktok-hashtag-analysis",
-    version="1.0.0",
+    version=__version__,
     author="Bellingcat",
+    author_email="tech@bellingcat.com",
     packages=["tiktok_hashtag_analysis"],
     description="Analyze hashtags within posts scraped from TikTok",
     long_description=long_description,
@@ -23,7 +25,7 @@ setuptools.setup(
         ],
     entry_points={
         "console_scripts": [
-            "tiktok_hashtag_analysis=tiktok_hashtag_analysis.main:main",
+            "tiktok_hashtag_analysis=tiktok_hashtag_analysis.__main__:main",
         ]
     },
 )

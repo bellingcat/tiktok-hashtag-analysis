@@ -12,7 +12,7 @@ import time
 from typing import List, Tuple, Dict, Any, Optional
 from tempfile import TemporaryDirectory
 import tiktok_hashtag_analysis.global_data
-import tiktok_hashtag_analysis.file_methods
+import tiktok_hashtag_analysis.file_methods as file_methods
 import tiktok_hashtag_analysis.data_methods
 
 

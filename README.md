@@ -1,21 +1,14 @@
 # TikTok hashtag analysis toolset 
 The tool helps to download posts and videos from TikTok for a given set of hashtags over a period of time. Users can create a growing database of posts for specific hashtags which can then be used for further hashtag analysis. It uses the [tiktok-scraper](https://github.com/drawrowfly/tiktok-scraper) Node package  to download the posts and videos.
 
+[![PyPI version](https://badge.fury.io/py/tiktok-hashtag-analysis.svg)](https://badge.fury.io/py/tiktok-hashtag-analysis
+
 ## Pre-requisites
 1. Make sure you have Python 3.6 or a later version installed
 2. And, you need to have node version 16. On Mac, do `brew install node` followed by `npm install -g n` and then `n 16`
 4. Download and install TikTok scraper: https://github.com/drawrowfly/tiktok-scraper 
-5. (Optional) create and activate a virtual environment for this tool, for example by executing the following command, which creates the `.env` virtual environment in the tool's root directory:
-
-    `python3 -m venv .env`
-
-4. Start your virtual environment
-    - On Unix-like operating systems (macOS, Linux), this can be done using the command `source .env/bin/activate`
-    - On Windows, this can be done using the command `.env\Scripts\activate.bat`
-    
-5. Install the tool with pip: 
-
-    `pip install git+https://github.com/bellingcat/tiktok-hashtag-analysis`
+5. Install the tool with pip: `pip install tiktok-hashtag-analysis`
+   1. or directly from the repo version: `pip install git+https://github.com/bellingcat/tiktok-hashtag-analysis`
 
 You should now be ready to start using it.
 
@@ -23,17 +16,27 @@ You should now be ready to start using it.
 ## About the tool
 ### Command-line arguments
 ```
-python3 run_downloader.py --help
-usage: run_downloader.py [-h] [-t [T [T ...]]] [-f F] [-p] [-v]
+python3 tiktok-hashtag-analysis --help
+usage: tiktok-hashtag-analysis [-h] [-t [T ...]] [-f F] [-p] [-v] [-ht HASHTAG] [-n NUMBER] [-plt] [-d] {download,frequencies}
 
-Download the tiktoks for the requested hashtags
+Analyze hashtags within posts scraped from TikTok.
 
-optional arguments:
-  -h, --help      show this help message and exit
-  -t [T [T ...]]  List of hashtags to scrape
-  -f F            File name containing list of hashtags to scrape
-  -p              Download post data
-  -v              Download video files
+positional arguments:
+  {download,frequencies}
+                        command to initialize
+
+options:
+  -h, --help            show this help message and exit
+  -t [T ...]            List of hashtags to scrape (module: run_downloader)
+  -f F                  File name containing list of hashtags to scrape (module: run_downloader)
+  -p                    Download post data (module: run_downloader)
+  -v                    Download video files (module: run_downloader)
+  -ht HASHTAG, --hashtag HASHTAG
+                        The hashtag of scraped posts to analyze (module: hashtag_frequencies)
+  -n NUMBER, --number NUMBER
+                        The number of top n occurrences (module: hashtag_frequencies)
+  -plt, --plot          Plot the occurrences (module: hashtag_frequencies)
+  -d, --print           List top n hashtags (module: hashtag_frequencies)
 ```
 
 ### Structure of output data
@@ -61,13 +64,13 @@ The `data` folder contains all the downloaded data as shown in the tree diagram 
 
 ## How to use
 ### Post downloading
-Running the `run_downloader.py` script with the following options will scrape posts containing the hashtags `#london`, `#paris`, or `#newyork`:
+Running the `tiktok-hashtag-analysis download` command with the following options will scrape posts containing the hashtags `#london`, `#paris`, or `#newyork`:
 
-    python3 run_downloader.py -t london paris newyork -p
+    tiktok-hashtag-analysis download -t london paris newyork -p
 
 and will produce an output similar to the following log:
 
-    $ python3 run_downloader.py -t london paris newyork -p
+    $ tiktok-hashtag-analysis download -t london paris newyork -p
     Hashtags to scrape: ['london', 'paris', 'newyork']
     Scraped 963 posts containing the hashtag 'london'
     Scraped 961 posts containing the hashtag 'paris'
@@ -78,8 +81,8 @@ and will produce an output similar to the following log:
 - The `-p` flag specifies that posts, not videos, will be downloaded
 
 ### Video downloading
-Running the `run_downloader.py` script with the following options will scrape trending videos containing the hashtag `#london`:
-` python3 run_downloader.py -t london -v`
+Running the `tiktok-hashtag-analysis download` script with the following options will scrape trending videos containing the hashtag `#london`:
+`tiktok-hashtag-analysis download -t london -v`
 
 - The `-t` flag allows a space-separated list of hashtags to be specified as a command line argument
 - The `-v` flag specifies that videos, not posts, will be downloaded
@@ -88,27 +91,13 @@ Note that video downloading is a time and data rate consuming task, as a result 
 
 ## Analyzing results 
 ### Top n hashtag occurrences 
-The script `hashtag_frequencies.py` analyzes the frequencies of top occurring hashtags in a given set of posts.
-
-```
-$ python3 hashtag_frequencies.py --help
-usage: hashtag_frequencies.py [-h] [-p] [-d] hashtag n
-
-positional arguments:
-  hashtag      The hashtag of scraped posts to analyze
-  n            The number of top n occurrences
-
-optional arguments:
-  -h, --help   show this help message and exit
-  -p, --plot   Plot the occurrences
-  -d, --print  List top n hashtags
-  ```
+The script `tiktok-hashtag-analysis frequencies` analyzes the frequencies of top occurring hashtags in a given set of posts.
 
 Assume we want to analyze the 20 most frequently occurring hashtags in the downloaded posts of the `#london` hashtag.
 
 - The results can be plotted and saved as a PNG file by executing the following command: 
 
-    `python3 hashtag_frequencies.py london 20 -p`
+    `tiktok-hashtag-analysis frequencies london 20 -p`
     
     which will produce a figure similar to that shown below:
     <p align="center">
@@ -119,7 +108,7 @@ Assume we want to analyze the 20 most frequently occurring hashtags in the downl
 
 - The results can be displayed in tabular form by executing the following command:
 
-    `python3 hashtag_frequencies.py london 20 -d`
+    `tiktok-hashtag-analysis frequencies london 20 -d`
 
     which will produce a terminal output similar to the following:
     ```

@@ -1,7 +1,7 @@
-import logging
-import argparse
-from tiktok_hashtag_analysis.run_downloader import * # Import everything from run_downloader.py
-from tiktok_hashtag_analysis.hashtag_frequencies import * # Import everything from hashtag_frequencies.py
+import logging, argparse
+from .file_methods import log_writer
+from .run_downloader import * # Import everything from run_downloader.py
+from .hashtag_frequencies import * # Import everything from hashtag_frequencies.py
 
 logger = logging.getLogger()
 
@@ -50,7 +50,7 @@ def main():
 
         scraped_summary_list = get_data(hashtags, download_data_type)
         if scraped_summary_list:
-            file_methods.log_writer(scraped_summary_list)
+            log_writer(scraped_summary_list)
     elif args.command == "frequencies":
         img_folder = IMAGES
         check_file(img_folder, "dir")
@@ -64,10 +64,13 @@ def main():
             raise FileNotFoundError(
                 f"File ({input_file}) for specified argument `hashtag` ({args.hashtag}) does not exist.")
 
-        base = os.path.splitext(input_file)[0]
-        path = f"./{base}_sorted_hashtags.csv"
+        # base = os.path.splitext(input_file)[0]
+        # path = f"./{base}_sorted_hashtags.csv"
         occs = get_occurrences(input_file, args.n)
         if args.plot:
             plot(occs, img_folder)
         else:
             print_occurrences(occs)
+
+if __name__=="__main__":
+    main()

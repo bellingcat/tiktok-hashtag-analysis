@@ -12,7 +12,6 @@ data/
 service_account.json
 .vscode/
 *.log
-*.lock
 
 # Unit test / coverage reports
 reports

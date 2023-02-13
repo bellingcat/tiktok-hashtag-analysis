@@ -4,7 +4,7 @@
 from typing import NamedTuple, List, Tuple, Set, Optional, Dict, Any
 import logging
 
-import file_methods
+from . import file_methods
 
 logger = logging.getLogger()
 
