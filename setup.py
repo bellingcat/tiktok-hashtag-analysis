@@ -1,5 +1,5 @@
 import setuptools
-from tiktok_hashtag_analysis import __version__
+from tiktok_hashtag_analysis.version import __version__
 
 with open("README.md", "r", encoding="utf-8") as file:
     long_description = file.read()
