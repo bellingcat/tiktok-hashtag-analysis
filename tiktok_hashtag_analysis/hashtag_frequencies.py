@@ -13,8 +13,6 @@ from typing import List, Tuple, Dict, Any
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 import seaborn as sns
-from tiktok_hashtag_analysis.file_methods import check_file, check_existence
-from tiktok_hashtag_analysis.global_data import IMAGES, FILES
 
 warnings.filterwarnings("ignore", message="Glyph (.*) missing from current font")
 sns.set_theme(style="darkgrid")

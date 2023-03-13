@@ -16,7 +16,7 @@ You should now be ready to start using it.
 ## About the tool
 ### Command-line arguments
 ```
-python3 tiktok-hashtag-analysis --help
+tiktok-hashtag-analysis --help
 usage: tiktok-hashtag-analysis [-h] [-t [T ...]] [-f F] [-p] [-v] [-ht HASHTAG] [-n NUMBER] [-plt] [-d] {download,frequencies}
 
 Analyze hashtags within posts scraped from TikTok.

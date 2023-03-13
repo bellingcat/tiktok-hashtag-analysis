@@ -11,9 +11,9 @@ import os
 import time
 from typing import List, Tuple, Dict, Any, Optional
 from tempfile import TemporaryDirectory
-import tiktok_hashtag_analysis.global_data
+from tiktok_hashtag_analysis import global_data
 import tiktok_hashtag_analysis.file_methods as file_methods
-import tiktok_hashtag_analysis.data_methods
+from tiktok_hashtag_analysis import data_methods
 
 
 def get_hashtag_list(file_name: str) -> List[str]:
