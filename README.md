@@ -1,4 +1,7 @@
 # TikTok hashtag analysis toolset 
+
+> IMPORTANT NOTE: this tool relies on [drawrowfly/tiktok-scraper](https://github.com/drawrowfly/tiktok-scraper) which seems to be broken at time of writing and without updates for some time with several open issues ([796](https://github.com/drawrowfly/tiktok-scraper/issues/796) [#799](https://github.com/drawrowfly/tiktok-scraper/issues/799)) that need to be fixed before this library can work smoothly :/
+
 The tool helps to download posts and videos from TikTok for a given set of hashtags over a period of time. Users can create a growing database of posts for specific hashtags which can then be used for further hashtag analysis. It uses the [tiktok-scraper](https://github.com/drawrowfly/tiktok-scraper) Node package  to download the posts and videos.
 
 [![PyPI version](https://badge.fury.io/py/tiktok-hashtag-analysis.svg)](https://badge.fury.io/py/tiktok-hashtag-analysis)
