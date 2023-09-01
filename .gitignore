@@ -1,5 +1,7 @@
 # Data directory
 data/
+build/
+*.egg-info/
 
 # Miscellaneous files
 **/.DS_Store

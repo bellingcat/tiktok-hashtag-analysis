@@ -59,40 +59,38 @@ The `data` folder contains all the downloaded data as shown in the tree diagram 
 
 ## How to use
 ### Post downloading
-Running the `tiktok-hashtag-analysis` command with the following options will scrape posts containing the hashtags `#london`, `#paris`, or `#newyork`:
+Running the `tiktok-hashtag-analysis` command with the following options will scrape posts that contain the hashtags `#london`, `#paris`, or `#newyork`:
 
     tiktok-hashtag-analysis london paris newyork
 
 and will produce an output similar to the following log:
 
-    $ tiktok-hashtag-analysis download -t london paris newyork -p
+    $ tiktok-hashtag-analysis download london paris newyork
     Hashtags to scrape: ['london', 'paris', 'newyork']
     Scraped 963 posts containing the hashtag 'london'
     Scraped 961 posts containing the hashtag 'paris'
     Scraped 940 posts containing the hashtag 'newyork'
     Successfully scraped 2864 total entries
 
-- The `-t` flag allows a space-separated list of hashtags to be specified as a command line argument
-- The `-p` flag specifies that posts, not videos, will be downloaded
+- The list of hashtags to scrape is specified as a positional argument
 
 ### Video downloading
-Running the `tiktok-hashtag-analysis download` script with the following options will scrape trending videos containing the hashtag `#london`:
-`tiktok-hashtag-analysis download -t london -v`
+Running the `tiktok-hashtag-analysis` script with the following options will scrape trending videos containing the hashtag `#london`:
+`tiktok-hashtag-analysis download london --download`
 
-- The `-t` flag allows a space-separated list of hashtags to be specified as a command line argument
-- The `-v` flag specifies that videos, not posts, will be downloaded
+- The `--download` flag specifies that video files for scraped posts should be downloaded
 
-Note that video downloading is a time and data rate consuming task, as a result we recommend using one hashtag at a time when using the `-v` flag to avoid complications.
+Note that video downloading is a time and data rate consuming task, as a result we recommend using one hashtag at a time when using the `--download` flag to avoid complications.
 
 ## Analyzing results 
-### Top n hashtag occurrences 
-The script `tiktok-hashtag-analysis frequencies` analyzes the frequencies of top occurring hashtags in a given set of posts.
+### Most common co-occurring hashtags
+In addition to scraping data and downloading videos, the `tiktok-hashtag-analysis` script can also analyze the frequencies of the most common co-occurring hashtags in a given set of posts.
 
-Assume we want to analyze the 20 most frequently occurring hashtags in the downloaded posts of the `#london` hashtag.
+Assume we want to analyze the 20 most frequently co-occurring hashtags in the downloaded posts of the `#london` hashtag.
 
 - The results can be plotted and saved as a PNG file by executing the following command: 
 
-    `tiktok-hashtag-analysis frequencies --hashtag london --number 20 --plot`
+    `tiktok-hashtag-analysis london --number 20 --plot`
     
     which will produce a figure similar to that shown below:
     <p align="center">
@@ -103,32 +101,33 @@ Assume we want to analyze the 20 most frequently occurring hashtags in the downl
 
 - The results can be displayed in tabular form by executing the following command:
 
-    `tiktok-hashtag-analysis frequencies --hashtag london --number 20 --print`
+    `tiktok-hashtag-analysis london --number 20 --table`
 
     which will produce a terminal output similar to the following:
     ```
-    Rank     Hashtag                        Occurrences     Frequency
-    0        london                         960             1.0000
-    1        fyp                            494             0.5146
-    2        uk                             238             0.2479
-    3        foryou                         221             0.2302
-    4        foryoupage                     184             0.1917
-    5        viral                          179             0.1865
-    6        fypシ                           84              0.0875
-    7        funny                          56              0.0583
-    8        xyzbca                         51              0.0531
-    9        british                        45              0.0469
-    10       england                        44              0.0458
-    11       trending                       40              0.0417
-    12       fy                             33              0.0344
-    13       comedy                         32              0.0333
-    14       roadman                        28              0.0292
-    15       4u                             27              0.0281
-    16       usa                            26              0.0271
-    17       tiktok                         26              0.0271
-    18       travel                         21              0.0219
-    19       america                        20              0.0208
-    Total posts: 960
+    Co-occurring hashtags for #london posts
+    Rank     Hashtag                        Occurrences     Frequency      
+    0        london                         881             1.0000
+    1        fyp                            399             0.4529
+    2        uk                             174             0.1975
+    3        foryou                         168             0.1907
+    4        viral                          152             0.1725
+    5        foryoupage                     137             0.1555
+    6        fypシ                           73              0.0829
+    7        funny                          54              0.0613
+    8        tiktok                         43              0.0488
+    9        trending                       43              0.0488
+    10       british                        41              0.0465
+    11       england                        38              0.0431
+    12       xyzbca                         34              0.0386
+    13       fy                             33              0.0375
+    14       usa                            33              0.0375
+    15       love                           29              0.0329
+    16       comedy                         25              0.0284
+    17       royalfamily                    23              0.0261
+    18       queen                          23              0.0261
+    19       queenelizabeth                 22              0.0250
+    Total posts: 881
     ```
 
     The `Frequency` column shows the ratio of the occurrence to the total number of downloaded posts.

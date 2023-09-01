@@ -167,7 +167,7 @@ class TikTokDownloader:
                 f"No new videos to be downloaded for the hashtag: {hashtag}"
             )
 
-        # Populate list of URLs to download using yt-dlp, and list of image 
+        # Populate list of URLs to download using yt-dlp, and list of image
         # galleries to download using the `download_gallery` function
         urls_to_download = []
         galleries_to_download = []
@@ -233,7 +233,7 @@ class TikTokDownloader:
         ax.set_ylim(min(y_pos) - 1, max(y_pos) + 1)
         ax.set_title(f"Co-occurring hashtags for #{hashtag} posts")
         ax.xaxis.set_major_formatter(mtick.PercentFormatter(decimals=0))
-        
+
         # Write image of plot to file
         current_time = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         plot_file = self.data_dir / hashtag / "plots" / f"{hashtag}__{current_time}.png"
@@ -244,7 +244,7 @@ class TikTokDownloader:
     def run(self, download: bool, plot: bool, table: bool, number: int):
         """Execute the specified operations on all specified hashtags."""
 
-        # Scrape all specified hashtags and perform analyses, depending on if 
+        # Scrape all specified hashtags and perform analyses, depending on if
         # `--table` and `--plot` flags are used in the command
         for hashtag in self.hashtags:
             self.get_hashtag_posts(hashtag=hashtag)

@@ -1,7 +1,6 @@
 import logging
 import argparse
 from pathlib import Path
-import sys
 
 from .base import TikTokDownloader, load_hashtags_from_file
 
