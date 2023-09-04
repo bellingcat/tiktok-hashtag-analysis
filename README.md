@@ -15,7 +15,7 @@ You should now be ready to start using it.
 ## About the tool
 ### Command-line arguments
 ```
-usage: tiktok-hashtag-analysis [-h] [--file FILE] [-d] [--number NUMBER] [-p] [-t] [--output-dir OUTPUT_DIR] [--log LOG] [hashtags ...]
+usage: tiktok-hashtag-analysis [-h] [--file FILE] [-d] [--number NUMBER] [-p] [-t] [--output-dir OUTPUT_DIR] [--config CONFIG] [--log LOG] [hashtags ...]
 
 Analyze hashtags within posts scraped from TikTok.
 
@@ -31,6 +31,7 @@ optional arguments:
   -t, --table           Print a table of the most common co-occurring hashtags
   --output-dir OUTPUT_DIR
                         Directory to save scraped data and visualizations to
+  --config CONFIG       File name of configuration file to store TikTok credentials to
   --log LOG             File to write logs to
 ```
 
@@ -38,23 +39,23 @@ optional arguments:
 ```
 $ tree ../data
 ../data
-├── ids
-│   └── post_ids.json
 ├── london
-│   └── posts
-│       └── data.json
+│   ├── plots
+│   ├── posts.json
+│   └── media
 ├── newyork
-│   └── posts
-│       └── data.json
+│   ├── plots
+│   ├── posts.json
+│   └── media
 └── paris
-    └── posts
-        └── data.json
+│   ├── plots
+│   ├── posts.json
+│   └── media
 ```
 
 
 The `data` folder contains all the downloaded data as shown in the tree diagram above. 
-- The `ids` folder contains two files `post_ids.json` and `video_ids.json` that record the ids of the downloaded posts and videos for each hashtag.
-- Each hashtag has a folder with two subfolders `posts` and `videos` that store posts and videos respectively. The posts are stored in the `data.json` file in the `posts` folder, and videos are stored as the `.mp4` files in the `videos` folder.
+- Each hashtag has a folder with two subfolders `plots` and `media` that store plots of the most common co-occurring hashtags, and media downloaded from the posts. The posts are stored in the `posts.json` file, and downloaded media is stored as `.mp4` files (for videos) or audio and image files (for image galleries) in the `media` folder.
 
 
 ## How to use
@@ -75,8 +76,8 @@ and will produce an output similar to the following log:
 - The list of hashtags to scrape is specified as a positional argument
 
 ### Video downloading
-Running the `tiktok-hashtag-analysis` script with the following options will scrape trending videos containing the hashtag `#london`:
-`tiktok-hashtag-analysis download london --download`
+Running the `tiktok-hashtag-analysis` script with the following options will scrape trending posts containing the hashtag `#london`:
+`tiktok-hashtag-analysis london --download`
 
 - The `--download` flag specifies that video files for scraped posts should be downloaded
 
@@ -84,7 +85,7 @@ Note that video downloading is a time and data rate consuming task, as a result 
 
 ## Analyzing results 
 ### Most common co-occurring hashtags
-In addition to scraping data and downloading videos, the `tiktok-hashtag-analysis` script can also analyze the frequencies of the most common co-occurring hashtags in a given set of posts.
+In addition to scraping data and downloading media, the `tiktok-hashtag-analysis` script can also analyze the frequencies of the most common co-occurring hashtags in a given set of posts.
 
 Assume we want to analyze the 20 most frequently co-occurring hashtags in the downloaded posts of the `#london` hashtag.
 

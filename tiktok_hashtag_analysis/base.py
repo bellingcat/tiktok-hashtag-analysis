@@ -155,7 +155,7 @@ class TikTokDownloader:
 
         # Define file containing post data and directory to save videos to
         hashtag_file = self.data_dir / hashtag / "posts.json"
-        video_dir = self.data_dir / hashtag / "videos"
+        video_dir = self.data_dir / hashtag / "media"
         video_dir.mkdir(exist_ok=True)
 
         # Get list of post IDs that have previously had their media downloaded
@@ -191,8 +191,8 @@ class TikTokDownloader:
 
         # Download video files for all video posts
         if len(urls_to_download) > 0:
-            logging.info(f"Downloading videos for hashtag {hashtag}")
-        ydl_opts = {"outtmpl": os.path.join(video_dir, "%(id)s.%(ext)s")}
+            logging.info(f"Downloading media for hashtag {hashtag}")
+        ydl_opts = {"outtmpl": os.path.join(video_dir, "%(id)s.%(ext)s"), "ignore_errors": True}
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download(urls_to_download)
 
