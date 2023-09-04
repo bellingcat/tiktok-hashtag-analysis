@@ -6,6 +6,8 @@ from .base import TikTokDownloader, load_hashtags_from_file
 
 
 def create_parser():
+    """Create parser tp parse input command-line arguments."""
+
     parser = argparse.ArgumentParser(
         description="Analyze hashtags within posts scraped from TikTok."
     )
@@ -51,12 +53,20 @@ def create_parser():
         help="Directory to save scraped data and visualizations to",
         default=Path(".").resolve().parent / "data",
     )
+    parser.add_argument(
+        "--config",
+        type=str,
+        help="File name of configuration file to store TikTok credentials to",
+        default=None,
+    )
     parser.add_argument("--log", type=str, help="File to write logs to", default=None)
 
     return parser
 
 
 def main():
+    """Parse and process command-line arguments, scrape specified hashtags, and perform specified analyses."""
+
     parser = create_parser()
     args = parser.parse_args()
 
@@ -79,7 +89,9 @@ def main():
     else:
         hashtags = args.hashtags
 
-    downloader = TikTokDownloader(hashtags=hashtags, data_dir=args.output_dir)
+    downloader = TikTokDownloader(
+        hashtags=hashtags, data_dir=args.output_dir, config_file=args.config
+    )
 
     downloader.run(
         download=args.download, plot=args.plot, table=args.table, number=args.number

@@ -17,6 +17,8 @@ import seaborn as sns
 
 from TikTokApi import TikTokApi
 
+from .auth import Authorization
+
 warnings.filterwarnings("ignore", message="Glyph (.*) missing from current font")
 sns.set_theme(style="darkgrid")
 
@@ -38,13 +40,11 @@ def load_hashtags_from_file(file: str) -> List[str]:
     return process_hashtag_list(hashtags=hashtags)
 
 
-async def _fetch_hashtag_data(hashtag: str) -> List[Dict]:
+async def _fetch_hashtag_data(hashtag: str, ms_token: str) -> List[Dict]:
     """Fetch data for videos containing a specified hashtag, asynchronously."""
     data = []
     async with TikTokApi() as api:
-        await api.create_sessions(
-            ms_tokens=[os.environ["MS_TOKEN"]], num_sessions=1, sleep_after=3
-        )
+        await api.create_sessions(ms_tokens=[ms_token], num_sessions=1, sleep_after=3)
         async for video in api.hashtag(name=hashtag).videos(count=1000):
             data.append(video.as_dict)
     return data
@@ -101,12 +101,15 @@ def aggregate_cooccurring_hashtags(hashtag_file: Path) -> Counter:
 class TikTokDownloader:
     """Main class for scraping data from TikTok."""
 
-    def __init__(self, hashtags: List[str], data_dir: str):
+    def __init__(self, hashtags: List[str], data_dir: str, config_file: str = None):
         self.hashtags = process_hashtag_list(hashtags)
         logging.info(f"Hashtags to scrape: {hashtags}")
 
         self.data_dir = Path(data_dir)
         os.makedirs(self.data_dir, exist_ok=True)
+
+        self.auth = Authorization(config_file=config_file)
+        self.ms_token = self.auth.ms_token
 
     def get_hashtag_posts(self, hashtag: str):
         """Fetch data about posts that used a specified hashtag and merge with
@@ -125,7 +128,9 @@ class TikTokDownloader:
             already_fetched_data = []
 
         # Scrape posts that use the specified hashtag
-        fetched_data = asyncio.run(_fetch_hashtag_data(hashtag=hashtag))
+        fetched_data = asyncio.run(
+            _fetch_hashtag_data(hashtag=hashtag, ms_token=self.ms_token)
+        )
         if len(fetched_data) == 0:
             logging.warning(f"No posts were found for the hashtag: {hashtag}")
 
