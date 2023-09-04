@@ -109,7 +109,7 @@ class TikTokDownloader:
         os.makedirs(self.data_dir, exist_ok=True)
 
         self.auth = Authorization(config_file=config_file)
-        self.ms_token = self.auth.ms_token
+        self.ms_token = self.auth.get_token()
 
     def get_hashtag_posts(self, hashtag: str):
         """Fetch data about posts that used a specified hashtag and merge with

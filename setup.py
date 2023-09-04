@@ -16,6 +16,7 @@ setup(
     url="https://github.com/bellingcat/tiktok-hashtag-analysis",
     license="MIT License",
     install_requires=["seaborn", "matplotlib", "TikTokApi", "requests", "yt-dlp"],
+    extras_require={"test": ["pytest", "pytest-cov", "pytest-html", "pytest-metadata"]},
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Information Technology",
@@ -25,7 +26,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "tiktok-hashtag-analysis=tiktok_hashtag_analysis.__main__:main",
+            "tiktok-hashtag-analysis=tiktok_hashtag_analysis.cli:main",
         ]
     },
 )
