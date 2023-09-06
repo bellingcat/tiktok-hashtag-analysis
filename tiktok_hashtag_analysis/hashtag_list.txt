@@ -1,5 +1,0 @@
-# Enter a hashtag per line. Each line should contain only one word.
-london    
-paris
-tokyo
-newyork

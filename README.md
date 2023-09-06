@@ -1,16 +1,12 @@
 # TikTok hashtag analysis toolset 
 
-> IMPORTANT NOTE: this tool relies on [drawrowfly/tiktok-scraper](https://github.com/drawrowfly/tiktok-scraper) which seems to be broken at time of writing and without updates for some time with several open issues ([796](https://github.com/drawrowfly/tiktok-scraper/issues/796) [#799](https://github.com/drawrowfly/tiktok-scraper/issues/799)) that need to be fixed before this library can work smoothly :/
-
-The tool helps to download posts and videos from TikTok for a given set of hashtags over a period of time. Users can create a growing database of posts for specific hashtags which can then be used for further hashtag analysis. It uses the [tiktok-scraper](https://github.com/drawrowfly/tiktok-scraper) Node package  to download the posts and videos.
+The tool helps to download posts and videos from TikTok for a given set of hashtags over a period of time. Users can create a growing database of posts for specific hashtags which can then be used for further hashtag analysis. It uses the [TikTokApi](https://github.com/davidteather/TikTok-Api) Python package  to download the posts and uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) to download the videos.
 
 [![PyPI version](https://badge.fury.io/py/tiktok-hashtag-analysis.svg)](https://badge.fury.io/py/tiktok-hashtag-analysis)
 
 ## Pre-requisites
-1. Make sure you have Python 3.6 or a later version installed
-2. And, you need to have node version 16. On Mac, do `brew install node` followed by `npm install -g n` and then `n 16`
-4. Download and install TikTok scraper: https://github.com/drawrowfly/tiktok-scraper 
-5. Install the tool with pip: `pip install tiktok-hashtag-analysis`
+1. Make sure you have Python 3.9 or a later version installed
+2. Install the tool with pip: `pip install tiktok-hashtag-analysis`
    1. or directly from the repo version: `pip install git+https://github.com/bellingcat/tiktok-hashtag-analysis`
 
 You should now be ready to start using it.
@@ -19,88 +15,83 @@ You should now be ready to start using it.
 ## About the tool
 ### Command-line arguments
 ```
-tiktok-hashtag-analysis --help
-usage: tiktok-hashtag-analysis [-h] [-t [T ...]] [-f F] [-p] [-v] [-ht HASHTAG] [-n NUMBER] [-plt] [-d] {download,frequencies}
+usage: tiktok-hashtag-analysis [-h] [--file FILE] [-d] [--number NUMBER] [-p] [-t] [--output-dir OUTPUT_DIR] [--config CONFIG] [--log LOG] [hashtags ...]
 
 Analyze hashtags within posts scraped from TikTok.
 
 positional arguments:
-  {download,frequencies}
-                        command to initialize
+  hashtags              List of hashtags to scrape
 
-options:
+optional arguments:
   -h, --help            show this help message and exit
-  -t [T ...]            List of hashtags to scrape (module: run_downloader)
-  -f F                  File name containing list of hashtags to scrape (module: run_downloader)
-  -p                    Download post data (module: run_downloader)
-  -v                    Download video files (module: run_downloader)
-  -ht HASHTAG, --hashtag HASHTAG
-                        The hashtag of scraped posts to analyze (module: hashtag_frequencies)
-  -n NUMBER, --number NUMBER
-                        The number of top n occurrences (module: hashtag_frequencies)
-  -plt, --plot          Plot the occurrences (module: hashtag_frequencies)
-  -d, --print           List top n hashtags (module: hashtag_frequencies)
+  --file FILE           File name containing list of hashtags to scrape
+  -d, --download        Download video files corresponding to scraped posts
+  --number NUMBER       The number of co-occurring hashtags to analyze
+  -p, --plot            Plot the most common co-occurring hashtags
+  -t, --table           Print a table of the most common co-occurring hashtags
+  --output-dir OUTPUT_DIR
+                        Directory to save scraped data and visualizations to
+  --config CONFIG       File name of configuration file to store TikTok credentials to
+  --log LOG             File to write logs to
 ```
 
 ### Structure of output data
 ```
 $ tree ../data
 ../data
-├── ids
-│   └── post_ids.json
 ├── london
-│   └── posts
-│       └── data.json
+│   ├── plots
+│   ├── posts.json
+│   └── media
 ├── newyork
-│   └── posts
-│       └── data.json
+│   ├── plots
+│   ├── posts.json
+│   └── media
 └── paris
-    └── posts
-        └── data.json
+│   ├── plots
+│   ├── posts.json
+│   └── media
 ```
 
 
 The `data` folder contains all the downloaded data as shown in the tree diagram above. 
-- The `ids` folder contains two files `post_ids.json` and `video_ids.json` that record the ids of the downloaded posts and videos for each hashtag.
-- Each hashtag has a folder with two subfolders `posts` and `videos` that store posts and videos respectively. The posts are stored in the `data.json` file in the `posts` folder, and videos are stored as the `.mp4` files in the `videos` folder.
+- Each hashtag has a folder with two subfolders `plots` and `media` that store plots of the most common co-occurring hashtags, and media downloaded from the posts. The posts are stored in the `posts.json` file, and downloaded media is stored as `.mp4` files (for videos) or audio and image files (for image galleries) in the `media` folder.
 
 
 ## How to use
 ### Post downloading
-Running the `tiktok-hashtag-analysis download` command with the following options will scrape posts containing the hashtags `#london`, `#paris`, or `#newyork`:
+Running the `tiktok-hashtag-analysis` command with the following options will scrape posts that contain the hashtags `#london`, `#paris`, or `#newyork`:
 
-    tiktok-hashtag-analysis download -t london paris newyork -p
+    tiktok-hashtag-analysis london paris newyork
 
 and will produce an output similar to the following log:
 
-    $ tiktok-hashtag-analysis download -t london paris newyork -p
+    $ tiktok-hashtag-analysis download london paris newyork
     Hashtags to scrape: ['london', 'paris', 'newyork']
     Scraped 963 posts containing the hashtag 'london'
     Scraped 961 posts containing the hashtag 'paris'
     Scraped 940 posts containing the hashtag 'newyork'
     Successfully scraped 2864 total entries
 
-- The `-t` flag allows a space-separated list of hashtags to be specified as a command line argument
-- The `-p` flag specifies that posts, not videos, will be downloaded
+- The list of hashtags to scrape is specified as a positional argument
 
 ### Video downloading
-Running the `tiktok-hashtag-analysis download` script with the following options will scrape trending videos containing the hashtag `#london`:
-`tiktok-hashtag-analysis download -t london -v`
+Running the `tiktok-hashtag-analysis` script with the following options will scrape trending posts containing the hashtag `#london`:
+`tiktok-hashtag-analysis london --download`
 
-- The `-t` flag allows a space-separated list of hashtags to be specified as a command line argument
-- The `-v` flag specifies that videos, not posts, will be downloaded
+- The `--download` flag specifies that video files for scraped posts should be downloaded
 
-Note that video downloading is a time and data rate consuming task, as a result we recommend using one hashtag at a time when using the `-v` flag to avoid complications.
+Note that video downloading is a time and data rate consuming task, as a result we recommend using one hashtag at a time when using the `--download` flag to avoid complications.
 
 ## Analyzing results 
-### Top n hashtag occurrences 
-The script `tiktok-hashtag-analysis frequencies` analyzes the frequencies of top occurring hashtags in a given set of posts.
+### Most common co-occurring hashtags
+In addition to scraping data and downloading media, the `tiktok-hashtag-analysis` script can also analyze the frequencies of the most common co-occurring hashtags in a given set of posts.
 
-Assume we want to analyze the 20 most frequently occurring hashtags in the downloaded posts of the `#london` hashtag.
+Assume we want to analyze the 20 most frequently co-occurring hashtags in the downloaded posts of the `#london` hashtag.
 
 - The results can be plotted and saved as a PNG file by executing the following command: 
 
-    `tiktok-hashtag-analysis frequencies london 20 -p`
+    `tiktok-hashtag-analysis london --number 20 --plot`
     
     which will produce a figure similar to that shown below:
     <p align="center">
@@ -111,32 +102,48 @@ Assume we want to analyze the 20 most frequently occurring hashtags in the downl
 
 - The results can be displayed in tabular form by executing the following command:
 
-    `tiktok-hashtag-analysis frequencies london 20 -d`
+    `tiktok-hashtag-analysis london --number 20 --table`
 
     which will produce a terminal output similar to the following:
     ```
-    Rank     Hashtag                        Occurrences     Frequency
-    0        london                         960             1.0000
-    1        fyp                            494             0.5146
-    2        uk                             238             0.2479
-    3        foryou                         221             0.2302
-    4        foryoupage                     184             0.1917
-    5        viral                          179             0.1865
-    6        fypシ                           84              0.0875
-    7        funny                          56              0.0583
-    8        xyzbca                         51              0.0531
-    9        british                        45              0.0469
-    10       england                        44              0.0458
-    11       trending                       40              0.0417
-    12       fy                             33              0.0344
-    13       comedy                         32              0.0333
-    14       roadman                        28              0.0292
-    15       4u                             27              0.0281
-    16       usa                            26              0.0271
-    17       tiktok                         26              0.0271
-    18       travel                         21              0.0219
-    19       america                        20              0.0208
-    Total posts: 960
+    Co-occurring hashtags for #london posts
+    Rank     Hashtag                        Occurrences     Frequency      
+    0        london                         881             1.0000
+    1        fyp                            399             0.4529
+    2        uk                             174             0.1975
+    3        foryou                         168             0.1907
+    4        viral                          152             0.1725
+    5        foryoupage                     137             0.1555
+    6        fypシ                           73              0.0829
+    7        funny                          54              0.0613
+    8        tiktok                         43              0.0488
+    9        trending                       43              0.0488
+    10       british                        41              0.0465
+    11       england                        38              0.0431
+    12       xyzbca                         34              0.0386
+    13       fy                             33              0.0375
+    14       usa                            33              0.0375
+    15       love                           29              0.0329
+    16       comedy                         25              0.0284
+    17       royalfamily                    23              0.0261
+    18       queen                          23              0.0261
+    19       queenelizabeth                 22              0.0250
+    Total posts: 881
     ```
 
     The `Frequency` column shows the ratio of the occurrence to the total number of downloaded posts.
+
+### Contributing
+To run the build-in tests in the `tests/` directory, first install the test dependency packages:
+
+```
+pip install .[test]
+```
+
+and then run the tests using the following command:
+
+```
+pytest
+```
+
+This repo uses [black](https://github.com/psf/black) to format source code, please run the `black` command before submitting a PR. 

@@ -3,7 +3,7 @@
 
 set -e
 
-TAG=$(python -c 'from tiktok_hashtag_analysis.version import __version__; print("v" + __version__)')
+TAG=$(python -c 'from tiktok_hashtag_analysis import __version__; print("v" + __version__)')
 
 read -p "Creating new release for $TAG. Do you want to continue? [Y/n] " prompt
 
