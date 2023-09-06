@@ -15,6 +15,7 @@ class Authorization:
             self.config_file = Path.home() / ".tiktok"
 
         self.section = "TikTok"
+        self.ms_token = None
 
     def get_token(self) -> str:
         """Load the "msToken" cookie taken from TikTok, which the scraper requires."""

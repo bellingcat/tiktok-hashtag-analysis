@@ -132,3 +132,18 @@ Assume we want to analyze the 20 most frequently co-occurring hashtags in the do
     ```
 
     The `Frequency` column shows the ratio of the occurrence to the total number of downloaded posts.
+
+### Contributing
+To run the build-in tests in the `tests/` directory, first install the test dependency packages:
+
+```
+pip install .[test]
+```
+
+and then run the tests using the following command:
+
+```
+pytest
+```
+
+This repo uses [black](https://github.com/psf/black) to format source code, please run the `black` command before submitting a PR. 

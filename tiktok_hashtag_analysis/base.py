@@ -192,7 +192,10 @@ class TikTokDownloader:
         # Download video files for all video posts
         if len(urls_to_download) > 0:
             logging.info(f"Downloading media for hashtag {hashtag}")
-        ydl_opts = {"outtmpl": os.path.join(video_dir, "%(id)s.%(ext)s"), "ignore_errors": True}
+        ydl_opts = {
+            "outtmpl": os.path.join(video_dir, "%(id)s.%(ext)s"),
+            "ignore_errors": True,
+        }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download(urls_to_download)
 
