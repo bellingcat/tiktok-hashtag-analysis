@@ -11,6 +11,7 @@ The tool helps to download posts and videos from TikTok for a given set of hasht
 
 You should now be ready to start using it.
 
+The scraper this tool uses requires an `msToken` taken from the TikTok website on your browser. The first time you run the tool, it will ask for this token. You can see how to retrieve the token by accessing your browser's "Developer Tools", and how to input its value into the tool's command-line interface in [this video](https://github.com/bellingcat/tiktok-hashtag-analysis/assets/18430739/b9d40957-c59e-4b6d-a843-13d210f89055).
 
 ## About the tool
 ### Command-line arguments
