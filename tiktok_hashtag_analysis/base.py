@@ -14,7 +14,8 @@ import requests
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 import seaborn as sns
-
+from tenacity import retry, retry_if_exception_type, stop_after_attempt
+from playwright._impl._api_types import Error
 from TikTokApi import TikTokApi
 
 from .auth import Authorization
@@ -40,6 +41,8 @@ def load_hashtags_from_file(file: str) -> List[str]:
     return process_hashtag_list(hashtags=hashtags)
 
 
+# Retry upon encountering transient playwright errors
+@retry(retry=retry_if_exception_type(Error), stop=stop_after_attempt(3))
 async def _fetch_hashtag_data(hashtag: str, ms_token: str) -> List[Dict]:
     """Fetch data for videos containing a specified hashtag, asynchronously."""
     data = []
@@ -105,13 +108,27 @@ class TikTokDownloader:
         self, hashtags: List[str], data_dir: Path, config_file: Optional[str] = None
     ):
         self.hashtags = process_hashtag_list(hashtags)
-        logging.info(f"Hashtags to scrape: {hashtags}")
 
         self.data_dir = Path(data_dir)
         os.makedirs(self.data_dir, exist_ok=True)
 
+        self.prioritize_hashtags()
+        logging.info(f"Hashtags to scrape: {self.hashtags}")
+        logging.info(f"Writing data to directory: {self.data_dir}")
+
         self.auth = Authorization(config_file=config_file)
         self.ms_token = self.auth.get_token()
+
+    def prioritize_hashtags(self):
+        """Order hashtags basd on whether they've been scraped before, and
+        the time they were most recently scraped"""
+
+        previously_scraped_hashtags = set(os.listdir(self.data_dir))
+        last_edited = {
+            hashtag: (self.data_dir / hashtag / "posts.json").lstat().st_mtime
+            for hashtag in previously_scraped_hashtags
+        }
+        self.hashtags.sort(key=lambda h: last_edited.get(h, 0))
 
     def get_hashtag_posts(self, hashtag: str):
         """Fetch data about posts that used a specified hashtag and merge with
@@ -148,8 +165,7 @@ class TikTokDownloader:
         json_dump(file_path=hashtag_file, data=all_fetched_data)
         logging.info(
             f"Scraped {len(new_fetched_data)} new posts containing the hashtag "
-            f"'{hashtag}' to output directory {self.data_dir}, with "
-            f"{len(already_fetched_data)} posts previously scraped"
+            f"'{hashtag}', with {len(already_fetched_data)} posts previously scraped"
         )
 
     def get_hashtag_videos(self, hashtag: str):
@@ -229,10 +245,11 @@ class TikTokDownloader:
 
         # Define labels and other fields used in plot
         total_posts = max(frequencies.values())
+        frequencies.pop(hashtag)
         sorted_frequencices = frequencies.most_common(number)
-        labels = [label for label, _ in sorted_frequencices[1:]]
-        ratios = [freq / total_posts * 100 for _, freq in sorted_frequencices[1:]]
-        y_pos = list(reversed(range(len(sorted_frequencices) - 1)))
+        labels = [label for label, _ in sorted_frequencices]
+        ratios = [freq / total_posts * 100 for _, freq in sorted_frequencices]
+        y_pos = list(reversed(range(len(sorted_frequencices))))
 
         # Visualize data in bar chart
         fig, ax = plt.subplots(figsize=(5, 6.66))
