@@ -7,7 +7,7 @@ import warnings
 import asyncio
 import logging
 import re
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 import yt_dlp
 import requests
@@ -101,7 +101,9 @@ def aggregate_cooccurring_hashtags(hashtag_file: Path) -> Counter:
 class TikTokDownloader:
     """Main class for scraping data from TikTok."""
 
-    def __init__(self, hashtags: List[str], data_dir: str, config_file: str = None):
+    def __init__(
+        self, hashtags: List[str], data_dir: Path, config_file: Optional[str] = None
+    ):
         self.hashtags = process_hashtag_list(hashtags)
         logging.info(f"Hashtags to scrape: {hashtags}")
 
@@ -146,7 +148,8 @@ class TikTokDownloader:
         json_dump(file_path=hashtag_file, data=all_fetched_data)
         logging.info(
             f"Scraped {len(new_fetched_data)} new posts containing the hashtag "
-            f"'{hashtag}', with {len(already_fetched_data)} posts previously scraped"
+            f"'{hashtag}' to output directory {self.data_dir}, with "
+            f"{len(already_fetched_data)} posts previously scraped"
         )
 
     def get_hashtag_videos(self, hashtag: str):

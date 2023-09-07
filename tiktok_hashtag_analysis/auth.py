@@ -15,7 +15,6 @@ class Authorization:
             self.config_file = Path.home() / ".tiktok"
 
         self.section = "TikTok"
-        self.ms_token = None
 
     def get_token(self) -> str:
         """Load the "msToken" cookie taken from TikTok, which the scraper requires."""
@@ -64,7 +63,7 @@ class Authorization:
         """Allow user to manually enter the token in the terminal."""
 
         print(
-            "\nPlease copy and paste your `msToken` cookie taken from your web browser when visiting the TikTok website. See [THIS VIDEO] for more information.\n"
+            "\nPlease copy and paste your `msToken` cookie taken from your web browser when visiting the TikTok website. For more information, watch the video: https://tinyurl.com/tiktok-mstoken\n"
         )
 
         ms_token = input("msToken: ")

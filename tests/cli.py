@@ -1,8 +1,15 @@
+import os
+from pathlib import Path
+
 import pytest
 
-from tiktok_hashtag_analysis.cli import create_parser
+from tiktok_hashtag_analysis.cli import (
+    create_parser,
+    process_output_dir,
+    DEFAULT_OUTPUT_DIR,
+)
 
-ARGUMENTS = [
+PARSER_ARGUMENTS = [
     ("file", "hashtags.txt", "--file"),
     ("download", True, "--download"),
     ("download", True, "-d"),
@@ -17,7 +24,7 @@ ARGUMENTS = [
 ]
 
 
-@pytest.mark.parametrize("attribute,value,flag", ARGUMENTS)
+@pytest.mark.parametrize("attribute,value,flag", PARSER_ARGUMENTS)
 def test_parser(hashtags, attribute, value, flag):
     argument_list = [*hashtags, flag]
 
@@ -29,3 +36,48 @@ def test_parser(hashtags, attribute, value, flag):
 
     assert args.get(attribute) == value
     assert args.get("hashtags") == hashtags
+
+
+def test_process_output_dir(monkeypatch, tmp_path):
+
+    home_dir = Path.home().resolve()
+
+    # Specified nonexistent output directory without write permissions
+    parser = create_parser()
+    specified_output_dir = home_dir.parent / "test"
+    with pytest.raises(SystemExit) as system_exit:
+        result = process_output_dir(
+            specified_output_dir=specified_output_dir, parser=parser
+        )
+    assert system_exit.type == SystemExit
+
+    # Specified existing output directory without write permissions
+    parser = create_parser()
+    specified_output_dir = home_dir.parent
+    with pytest.raises(SystemExit) as system_exit:
+        result = process_output_dir(
+            specified_output_dir=specified_output_dir, parser=parser
+        )
+    assert system_exit.type == SystemExit
+
+    # Unspecified, in current directory without write permissions
+    cwd = os.getcwd()
+    monkeypatch.chdir(specified_output_dir)
+    result = process_output_dir(specified_output_dir=None, parser=parser)
+    monkeypatch.chdir(cwd)
+    assert result == DEFAULT_OUTPUT_DIR
+
+    # Specified nonexisting output directory with write permissions
+    parser = create_parser()
+    specified_output_dir = tmp_path / "test" / "tiktok"
+    result = process_output_dir(
+        specified_output_dir=specified_output_dir, parser=parser
+    )
+    assert result == specified_output_dir
+
+    # Unspecified, in current directory with write permissions
+    cwd = os.getcwd()
+    monkeypatch.chdir(specified_output_dir)
+    result = process_output_dir(specified_output_dir=None, parser=parser)
+    monkeypatch.chdir(cwd)
+    assert result == DEFAULT_OUTPUT_DIR
