@@ -16,7 +16,7 @@ The scraper this tool uses requires an `msToken` taken from the TikTok website o
 ## About the tool
 ### Command-line arguments
 ```
-usage: tiktok-hashtag-analysis [-h] [--file FILE] [-d] [--number NUMBER] [-p] [-t] [--output-dir OUTPUT_DIR] [--config CONFIG] [--log LOG] [hashtags ...]
+usage: tiktok-hashtag-analysis [-h] [--file FILE] [-d] [--number NUMBER] [-p] [-t] [--output-dir OUTPUT_DIR] [--config CONFIG] [--log LOG] [--limit LIMIT] [-v] [hashtags ...]
 
 Analyze hashtags within posts scraped from TikTok.
 
@@ -34,6 +34,8 @@ optional arguments:
                         Directory to save scraped data and visualizations to
   --config CONFIG       File name of configuration file to store TikTok credentials to
   --log LOG             File to write logs to
+  --limit LIMIT         Maximum number of videos to download for each hashtag
+  -v, --verbose         Increase output verbosity
 ```
 
 ### Structure of output data
@@ -138,7 +140,7 @@ Assume we want to analyze the 20 most frequently co-occurring hashtags in the do
 To run the build-in tests in the `tests/` directory, first install the test dependency packages:
 
 ```
-pip install .[test]
+pip install .[dev]
 ```
 
 and then run the tests using the following command:
@@ -147,4 +149,7 @@ and then run the tests using the following command:
 pytest
 ```
 
-This repo uses [black](https://github.com/psf/black) to format source code, please run the `black` command before submitting a PR. 
+This repo uses [black](https://github.com/psf/black) to format source code and [mypy](https://mypy.readthedocs.io/en/stable/) for static type checking. Before submitting a pull request, please run both tools on the source code.
+
+- yt-dlp warning: (unable to find video in feed)
+https://www.tiktok.com/@sa_diya_34/video/7261180335763754242

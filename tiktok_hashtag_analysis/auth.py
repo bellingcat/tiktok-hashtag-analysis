@@ -22,20 +22,20 @@ class Authorization:
         # Step 1: check if MS_TOKEN is defined as environment variable
         if ms_token := os.environ.get("MS_TOKEN"):
             self.ms_token = ms_token
-            logging.info("Loaded token from environment variable")
+            logging.debug("Loaded token from environment variable")
 
         # Step 2: check if MS_TOKEN is defined in config file
         elif self.config_file.is_file():
             if ms_token := self.load_token():
                 self.ms_token = ms_token
-                logging.info(f"Loaded token from config file: {self.config_file}")
+                logging.debug(f"Loaded token from config file: {self.config_file}")
 
         # Step 3: have user enter MS_TOKEN via terminal
         else:
             ms_token = self.input_token()
             self.dump_token(ms_token=ms_token)
             self.ms_token = ms_token
-            logging.info(
+            logging.debug(
                 f"Loaded token from user input and saved to config file: {self.config_file}"
             )
 

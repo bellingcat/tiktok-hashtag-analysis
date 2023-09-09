@@ -63,6 +63,18 @@ def create_parser():
         default=None,
     )
     parser.add_argument("--log", type=str, help="File to write logs to", default=None)
+    parser.add_argument(
+        "--limit",
+        type=int,
+        help="Maximum number of videos to download for each hashtag",
+        default=1000,
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="Increase output verbosity",
+        action="store_true",
+    )
 
     return parser
 
@@ -97,7 +109,7 @@ def main():
     args = parser.parse_args()
 
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG if args.verbose else logging.INFO,
         filename=args.log,
         format="%(asctime)s %(levelname)s | %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
@@ -122,7 +134,11 @@ def main():
     )
 
     downloader.run(
-        download=args.download, plot=args.plot, table=args.table, number=args.number
+        limit=args.limit,
+        download=args.download,
+        plot=args.plot,
+        table=args.table,
+        number=args.number,
     )
 
 

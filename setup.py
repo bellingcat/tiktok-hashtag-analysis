@@ -21,8 +21,25 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/bellingcat/tiktok-hashtag-analysis",
     license="MIT License",
-    install_requires=["seaborn", "matplotlib", "TikTokApi", "requests", "yt_dlp", "tenacity"],
-    extras_require={"test": ["pytest", "pytest-cov", "pytest-html", "pytest-metadata"]},
+    install_requires=[
+        "seaborn",
+        "matplotlib",
+        "TikTokApi",
+        "requests",
+        "yt_dlp",
+        "tenacity",
+        "msvc-runtime; os_name=='nt'",
+    ],
+    extras_require={
+        "dev": [
+            "pytest",
+            "pytest-cov",
+            "pytest-html",
+            "pytest-metadata",
+            "black",
+            "mypy",
+        ]
+    },
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Information Technology",
