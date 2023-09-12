@@ -7,15 +7,14 @@ The tool helps to download posts and videos from TikTok for a given set of hasht
 ## Pre-requisites
 1. Make sure you have Python 3.9 or a later version installed
 2. Install the tool with pip: `pip install tiktok-hashtag-analysis`
-   1. or directly from the repo version: `pip install git+https://github.com/bellingcat/tiktok-hashtag-analysis`
+   - Alternatively you can install directly from the latest version on GitHub: `pip install git+https://github.com/bellingcat/tiktok-hashtag-analysis`
 
 You should now be ready to start using it.
-
 
 ## About the tool
 ### Command-line arguments
 ```
-usage: tiktok-hashtag-analysis [-h] [--file FILE] [-d] [--number NUMBER] [-p] [-t] [--output-dir OUTPUT_DIR] [--config CONFIG] [--log LOG] [hashtags ...]
+usage: tiktok-hashtag-analysis [-h] [--file FILE] [-d] [--number NUMBER] [-p] [-t] [--output-dir OUTPUT_DIR] [--config CONFIG] [--log LOG] [--limit LIMIT] [-v] [hashtags ...]
 
 Analyze hashtags within posts scraped from TikTok.
 
@@ -33,6 +32,8 @@ optional arguments:
                         Directory to save scraped data and visualizations to
   --config CONFIG       File name of configuration file to store TikTok credentials to
   --log LOG             File to write logs to
+  --limit LIMIT         Maximum number of videos to download for each hashtag
+  -v, --verbose         Increase output verbosity
 ```
 
 ### Structure of output data
@@ -137,7 +138,7 @@ Assume we want to analyze the 20 most frequently co-occurring hashtags in the do
 To run the build-in tests in the `tests/` directory, first install the test dependency packages:
 
 ```
-pip install .[test]
+pip install .[dev]
 ```
 
 and then run the tests using the following command:
@@ -146,4 +147,4 @@ and then run the tests using the following command:
 pytest
 ```
 
-This repo uses [black](https://github.com/psf/black) to format source code, please run the `black` command before submitting a PR. 
+This repo uses [black](https://github.com/psf/black) to format source code and [mypy](https://mypy.readthedocs.io/en/stable/) for static type checking. Before submitting a pull request, please run both tools on the source code.

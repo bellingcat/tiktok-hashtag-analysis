@@ -1,8 +1,13 @@
+import os
 import logging
 import argparse
 from pathlib import Path
-
+from typing import Optional
 from .base import TikTokDownloader, load_hashtags_from_file
+
+DEFAULT_OUTPUT_DIR = Path.home() / "tiktok_hashtag_data"
+
+logger = logging.getLogger(__name__)
 
 
 def create_parser():
@@ -51,7 +56,7 @@ def create_parser():
         "--output-dir",
         type=str,
         help="Directory to save scraped data and visualizations to",
-        default=Path(".").resolve().parent / "data",
+        default=None,
     )
     parser.add_argument(
         "--config",
@@ -60,8 +65,43 @@ def create_parser():
         default=None,
     )
     parser.add_argument("--log", type=str, help="File to write logs to", default=None)
+    parser.add_argument(
+        "--limit",
+        type=int,
+        help="Maximum number of videos to download for each hashtag",
+        default=1000,
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="Increase output verbosity",
+        action="store_true",
+    )
 
     return parser
+
+
+def process_output_dir(
+    specified_output_dir: Optional[str], parser: argparse.ArgumentParser
+) -> Path:
+    """Make sure the output directory can be created or has write permissions."""
+
+    error_message = (
+        lambda _output_dir: f"You don't have write permissions for the specified output directory (`{_output_dir}`). Please specify an output directory that you have write access to."
+    )
+
+    if specified_output_dir is None:
+        return DEFAULT_OUTPUT_DIR
+    else:
+        _output_dir = Path(specified_output_dir).resolve()
+        try:
+            os.makedirs(_output_dir, exist_ok=True)
+            if not os.access(path=_output_dir, mode=os.W_OK):
+                parser.error(error_message(_output_dir))
+            else:
+                return _output_dir
+        except PermissionError:
+            parser.error(error_message(_output_dir))
 
 
 def main():
@@ -71,7 +111,7 @@ def main():
     args = parser.parse_args()
 
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG if args.verbose else logging.INFO,
         filename=args.log,
         format="%(asctime)s %(levelname)s | %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
@@ -89,12 +129,18 @@ def main():
     else:
         hashtags = args.hashtags
 
+    output_dir = process_output_dir(specified_output_dir=args.output_dir, parser=parser)
+
     downloader = TikTokDownloader(
-        hashtags=hashtags, data_dir=args.output_dir, config_file=args.config
+        hashtags=hashtags, data_dir=output_dir, config_file=args.config
     )
 
     downloader.run(
-        download=args.download, plot=args.plot, table=args.table, number=args.number
+        limit=args.limit,
+        download=args.download,
+        plot=args.plot,
+        table=args.table,
+        number=args.number,
     )
 
 
