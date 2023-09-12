@@ -26,7 +26,6 @@ from tenacity import (
 from playwright._impl._api_types import Error
 from TikTokApi import TikTokApi
 
-from .auth import Authorization
 
 warnings.filterwarnings("ignore", message="Glyph (.*) missing from current font")
 sns.set_theme(style="darkgrid")
@@ -53,7 +52,7 @@ def load_hashtags_from_file(file: str) -> List[str]:
 
 # Retry upon encountering transient playwright errors
 @retry(retry=retry_if_exception_type(Error), stop=stop_after_attempt(3))
-async def _fetch_hashtag_data(hashtag: str, ms_token: str, limit: int) -> List[Dict]:
+async def _fetch_hashtag_data(hashtag: str, limit: int) -> List[Dict]:
     """Fetch data for videos containing a specified hashtag, asynchronously."""
     data = []
     async with TikTokApi() as api:
@@ -148,9 +147,6 @@ class TikTokDownloader:
         logger.info(f"Hashtags to scrape: {self.hashtags}")
         logger.info(f"Writing data to directory: {self.data_dir}")
 
-        self.auth = Authorization(config_file=config_file)
-        self.ms_token = self.auth.get_token()
-
     def prioritize_hashtags(self):
         """Order hashtags based on whether they've been scraped before, and
         the time they were most recently scraped"""
@@ -177,9 +173,7 @@ class TikTokDownloader:
         already_fetched_ids = set(video["id"] for video in already_fetched_data)
 
         # Scrape posts that use the specified hashtag
-        fetched_data = asyncio.run(
-            _fetch_hashtag_data(hashtag=hashtag, ms_token=self.ms_token, limit=limit)
-        )
+        fetched_data = asyncio.run(_fetch_hashtag_data(hashtag=hashtag, limit=limit))
         fetched_ids = set(video["id"] for video in fetched_data)
 
         if len(fetched_data) == 0:
