@@ -31,6 +31,8 @@ from .auth import Authorization
 warnings.filterwarnings("ignore", message="Glyph (.*) missing from current font")
 sns.set_theme(style="darkgrid")
 
+logger = logging.getLogger(__name__)
+
 
 def process_hashtag_list(hashtags: List[str]) -> List[str]:
     """Convert a list of hashtags to a standard form (remove whitespace, make
@@ -95,7 +97,7 @@ def download_file_and_save(url: str, filepath: Path):
     path_with_ext = filepath.with_suffix(f".{ext}")
     with open(path_with_ext, "wb") as f:
         f.write(r.content)
-        logging.debug(f"Saved file to: {path_with_ext}")
+        logger.debug(f"Saved file to: {path_with_ext}")
 
 
 def download_gallery(video_data: Dict, video_dir: Path):
@@ -143,8 +145,8 @@ class TikTokDownloader:
         os.makedirs(self.data_dir, exist_ok=True)
 
         self.prioritize_hashtags()
-        logging.info(f"Hashtags to scrape: {self.hashtags}")
-        logging.info(f"Writing data to directory: {self.data_dir}")
+        logger.info(f"Hashtags to scrape: {self.hashtags}")
+        logger.info(f"Writing data to directory: {self.data_dir}")
 
         self.auth = Authorization(config_file=config_file)
         self.ms_token = self.auth.get_token()
@@ -181,7 +183,7 @@ class TikTokDownloader:
         fetched_ids = set(video["id"] for video in fetched_data)
 
         if len(fetched_data) == 0:
-            logging.warning(f"No posts were found for the hashtag: {hashtag}")
+            logger.warning(f"No posts were found for the hashtag: {hashtag}")
 
         # Determine which newly scraped posts haven't been scraped before
         old_fetched_data = [
@@ -193,7 +195,7 @@ class TikTokDownloader:
         # Merge new and old data and write to file
         all_fetched_data = old_fetched_data + fetched_data
         json_dump(file_path=hashtag_file, data=all_fetched_data)
-        logging.info(
+        logger.info(
             f"Scraped {new_post_count} new posts containing the hashtag "
             f"'{hashtag}', with {old_post_count} posts previously scraped"
         )
@@ -232,25 +234,27 @@ class TikTokDownloader:
 
         # Download audio and image files for all image gallery posts
         if len(galleries_to_download) > 0:
-            logging.info(f"Downloading image galleries for hashtag {hashtag}")
+            logger.info(f"Downloading image galleries for hashtag {hashtag}")
         for video in galleries_to_download:
-            logging.debug(f"Downloading image gallery for video: {video['id']}")
+            logger.debug(f"Downloading image gallery for video: {video['id']}")
             download_gallery(video_data=video, video_dir=video_dir)
 
         # Download video files for all video posts
         if len(urls_to_download) > 0:
-            logging.info(f"Downloading media for hashtag {hashtag}")
+            logger.info(f"Downloading media for hashtag {hashtag}")
+
         ydl_opts = {
             "outtmpl": os.path.join(video_dir, "%(id)s.%(ext)s"),
             "ignore_errors": True,
+            "quiet": logger.getEffectiveLevel() > logging.DEBUG,
         }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             for url in urls_to_download:
                 try:
                     ydl.download([url])
                 except (HTTPError, TypeError, ExtractorError, DownloadError) as e:
-                    # catch urllib and yt-dlp errors when video not found
-                    logging.warning(
+                    # Catch urllib and yt-dlp errors when video not found
+                    logger.warning(
                         f"Encountered error {e} when attempting to download url: {url}"
                     )
 
@@ -303,7 +307,7 @@ class TikTokDownloader:
         plot_file = self.data_dir / hashtag / "plots" / f"{hashtag}__{current_time}.png"
         plot_file.parent.mkdir(exist_ok=True, parents=True)
         plt.savefig(plot_file, bbox_inches="tight", facecolor="white", dpi=300)
-        logging.info(f"Plot saved to file: {plot_file}")
+        logger.info(f"Plot saved to file: {plot_file}")
 
     def run(self, limit: int, download: bool, plot: bool, table: bool, number: int):
         """Execute the specified operations on all specified hashtags."""

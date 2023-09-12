@@ -7,7 +7,7 @@ The tool helps to download posts and videos from TikTok for a given set of hasht
 ## Pre-requisites
 1. Make sure you have Python 3.9 or a later version installed
 2. Install the tool with pip: `pip install tiktok-hashtag-analysis`
-   1. or directly from the repo version: `pip install git+https://github.com/bellingcat/tiktok-hashtag-analysis`
+   - Alternatively you can install directly from the latest version on GitHub: `pip install git+https://github.com/bellingcat/tiktok-hashtag-analysis`
 
 You should now be ready to start using it.
 
@@ -150,6 +150,3 @@ pytest
 ```
 
 This repo uses [black](https://github.com/psf/black) to format source code and [mypy](https://mypy.readthedocs.io/en/stable/) for static type checking. Before submitting a pull request, please run both tools on the source code.
-
-- yt-dlp warning: (unable to find video in feed)
-https://www.tiktok.com/@sa_diya_34/video/7261180335763754242

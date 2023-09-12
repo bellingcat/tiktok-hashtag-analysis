@@ -7,6 +7,8 @@ from .base import TikTokDownloader, load_hashtags_from_file
 
 DEFAULT_OUTPUT_DIR = Path.home() / "tiktok_hashtag_data"
 
+logger = logging.getLogger(__name__)
+
 
 def create_parser():
     """Create parser tp parse input command-line arguments."""

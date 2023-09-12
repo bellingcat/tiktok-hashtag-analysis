@@ -42,7 +42,6 @@ def test_parser(hashtags, attribute, value, flag):
 
 
 def test_process_output_dir(monkeypatch, tmp_path):
-
     home_dir = Path.home().resolve()
 
     # Specified nonexistent output directory without write permissions
