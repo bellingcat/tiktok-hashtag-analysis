@@ -8,6 +8,7 @@ The tool helps to download posts and videos from TikTok for a given set of hasht
 1. Make sure you have Python 3.9 or a later version installed
 2. Install the tool with pip: `pip install tiktok-hashtag-analysis`
    - Alternatively you can install directly from the latest version on GitHub: `pip install git+https://github.com/bellingcat/tiktok-hashtag-analysis`
+3. Make sure [Playwright](https://playwright.dev/python/docs/intro) is properly installed byrunning the command `python -m playwright install`
 
 You should now be ready to start using it.
 
