@@ -1,0 +1,15 @@
+name: Test on Windows
+
+on: [push]
+
+jobs:
+  pytest:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+      - run: pip install -e .[dev]
+      - run: python -m playwright install
+      - run: pytest --exitfirst --failed-first
