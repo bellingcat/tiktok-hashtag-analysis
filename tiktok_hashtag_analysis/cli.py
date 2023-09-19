@@ -77,7 +77,11 @@ def create_parser():
         help="Increase output verbosity",
         action="store_true",
     )
-
+    parser.add_argument(
+        "--headed",
+        help="Don't use headless version of TikTok scraper",
+        action="store_true",
+    )
     return parser
 
 
@@ -146,6 +150,7 @@ def main():
         plot=args.plot,
         table=args.table,
         number=args.number,
+        headed=args.headed,
     )
 
 

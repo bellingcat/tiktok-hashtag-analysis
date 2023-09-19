@@ -52,11 +52,15 @@ def load_hashtags_from_file(file: str) -> List[str]:
 
 # Retry upon encountering transient playwright errors
 @retry(retry=retry_if_exception_type(Error), stop=stop_after_attempt(3))
-async def _fetch_hashtag_data(hashtag: str, limit: int) -> List[Dict]:
+async def _fetch_hashtag_data(
+    hashtag: str, limit: int, headed: bool = False
+) -> List[Dict]:
     """Fetch data for videos containing a specified hashtag, asynchronously."""
     data = []
     async with TikTokApi() as api:
-        await api.create_sessions(ms_tokens=[], num_sessions=1, sleep_after=3)
+        await api.create_sessions(
+            ms_tokens=[], num_sessions=1, sleep_after=3, headless=not headed
+        )
         async for video in api.hashtag(name=hashtag).videos(count=limit):
             data.append(video.as_dict)
     return data
@@ -157,7 +161,7 @@ class TikTokDownloader:
         }
         self.hashtags.sort(key=lambda h: last_edited.get(h, 0))
 
-    def get_hashtag_posts(self, hashtag: str, limit: int):
+    def get_hashtag_posts(self, hashtag: str, limit: int, headed: bool):
         """Fetch data about posts that used a specified hashtag and merge with
         existing data, if it exists."""
 
@@ -172,8 +176,20 @@ class TikTokDownloader:
             already_fetched_data = []
         already_fetched_ids = set(video["id"] for video in already_fetched_data)
 
-        # Scrape posts that use the specified hashtag
-        fetched_data = asyncio.run(_fetch_hashtag_data(hashtag=hashtag, limit=limit))
+        # Scrape posts that use the specified hashag
+        # Attempt to be robust against TikTok's countermeasures for headless browsing
+        try:
+            fetched_data = asyncio.run(
+                _fetch_hashtag_data(hashtag=hashtag, limit=limit, headed=headed)
+            )
+        except Exception as e:
+            logger.warning(
+                "Encountered error {e} when fetching data, retrying in headed mode"
+            )
+            fetched_data = asyncio.run(
+                _fetch_hashtag_data(hashtag=hashtag, limit=limit, headed=True)
+            )
+
         fetched_ids = set(video["id"] for video in fetched_data)
 
         if len(fetched_data) == 0:
@@ -303,13 +319,21 @@ class TikTokDownloader:
         plt.savefig(plot_file, bbox_inches="tight", facecolor="white", dpi=300)
         logger.info(f"Plot saved to file: {plot_file}")
 
-    def run(self, limit: int, download: bool, plot: bool, table: bool, number: int):
+    def run(
+        self,
+        limit: int,
+        download: bool,
+        plot: bool,
+        table: bool,
+        number: int,
+        headed: bool,
+    ):
         """Execute the specified operations on all specified hashtags."""
 
         # Scrape all specified hashtags and perform analyses, depending on if
         # `--table`, `--plot`, and `--download` flags are used in the command
         for hashtag in self.hashtags:
-            self.get_hashtag_posts(hashtag=hashtag, limit=limit)
+            self.get_hashtag_posts(hashtag=hashtag, limit=limit, headed=headed)
             if plot:
                 self.plot(hashtag=hashtag, number=number)
             if table:

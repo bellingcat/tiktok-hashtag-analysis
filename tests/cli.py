@@ -20,6 +20,7 @@ PARSER_ARGUMENTS = [
     ("table", True, "--table"),
     ("table", True, "-t"),
     ("verbose", True, "--verbose"),
+    ("headed", True, "--headed"),
     ("verbose", True, "-v"),
     ("output_dir", "/tmp/tiktok_download", "--output-dir"),
     ("config", "~/.tiktok", "--config"),
@@ -51,6 +52,7 @@ def test_output_dir_spec_noexist_nowrite(tmp_path):
             specified_output_dir=specified_output_dir, parser=parser
         )
     assert system_exit.type == SystemExit
+    os.chmod(tmp_path, 0o666)
 
 
 def test_output_dir_spec_exist_nowrite(tmp_path):
@@ -63,6 +65,7 @@ def test_output_dir_spec_exist_nowrite(tmp_path):
             specified_output_dir=specified_output_dir, parser=parser
         )
     assert system_exit.type == SystemExit
+    os.chmod(tmp_path, 0o666)
 
 
 def test_output_dir_unspec_nowrite(monkeypatch, tmp_path):
@@ -75,6 +78,7 @@ def test_output_dir_unspec_nowrite(monkeypatch, tmp_path):
     result = process_output_dir(specified_output_dir=None, parser=parser)
     monkeypatch.chdir(cwd)
     assert result == DEFAULT_OUTPUT_DIR
+    os.chmod(tmp_path, 0o666)
 
 
 def test_output_dir_spec_noexist_write(tmp_path):
