@@ -101,7 +101,7 @@ def process_output_dir(
             else:
                 # On Windows, os.access is unreliable
                 temp_file = _output_dir / "test.txt"
-                with open(temp_file, 'w') as f:
+                with open(temp_file, "w") as f:
                     f.write("test")
                 os.remove(temp_file)
                 return _output_dir
