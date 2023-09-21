@@ -184,7 +184,7 @@ class TikTokDownloader:
             )
         except Exception as e:
             logger.warning(
-                "Encountered error {e} when fetching data, retrying in headed mode"
+                f"Encountered error {e} when fetching data, retrying in headed mode"
             )
             fetched_data = asyncio.run(
                 _fetch_hashtag_data(hashtag=hashtag, limit=limit, headed=True)

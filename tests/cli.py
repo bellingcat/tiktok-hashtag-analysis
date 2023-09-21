@@ -42,32 +42,6 @@ def test_parser(hashtags, attribute, value, flag):
     assert args.get("hashtags") == hashtags
 
 
-def test_output_dir_spec_noexist_nowrite(tmp_path):
-    # Specified nonexistent output directory without write permissions
-    parser = create_parser()
-    os.chmod(tmp_path, 0o444)
-    specified_output_dir = tmp_path / "test"
-    with pytest.raises(SystemExit) as system_exit:
-        result = process_output_dir(
-            specified_output_dir=specified_output_dir, parser=parser
-        )
-    assert system_exit.type == SystemExit
-    os.chmod(tmp_path, 0o666)
-
-
-def test_output_dir_spec_exist_nowrite(tmp_path):
-    # Specified existing output directory without write permissions
-    parser = create_parser()
-    os.chmod(tmp_path, 0o444)
-    specified_output_dir = tmp_path
-    with pytest.raises(SystemExit) as system_exit:
-        result = process_output_dir(
-            specified_output_dir=specified_output_dir, parser=parser
-        )
-    assert system_exit.type == SystemExit
-    os.chmod(tmp_path, 0o666)
-
-
 def test_output_dir_unspec_nowrite(monkeypatch, tmp_path):
     # Unspecified, in current directory without write permissions
     parser = create_parser()

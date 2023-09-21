@@ -12,4 +12,4 @@ jobs:
           python-version: '3.9'
       - run: pip install -e .[dev]
       - run: python -m playwright install
-      - run: pytest --exitfirst --failed-first
+      - run: pytest
