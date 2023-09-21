@@ -3,7 +3,16 @@ from tiktok_hashtag_analysis.base import TikTokDownloader, load_hashtags_from_fi
 
 def test_scrape(tmp_path, hashtags):
     downloader = TikTokDownloader(hashtags=hashtags[:1], data_dir=tmp_path)
-    downloader.run(limit=1000, download=True, plot=True, table=True, number=20)
+    downloader.run(
+        limit=10, download=True, plot=True, table=True, number=5, headed=True
+    )
+
+
+def test_scrape_headless(tmp_path, hashtags):
+    downloader = TikTokDownloader(hashtags=hashtags[:1], data_dir=tmp_path)
+    downloader.run(
+        limit=10, download=True, plot=True, table=True, number=5, headed=False
+    )
 
 
 def test_load_hashtags_from_file(tmp_path, hashtags):

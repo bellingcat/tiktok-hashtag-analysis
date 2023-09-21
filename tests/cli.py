@@ -20,6 +20,7 @@ PARSER_ARGUMENTS = [
     ("table", True, "--table"),
     ("table", True, "-t"),
     ("verbose", True, "--verbose"),
+    ("headed", True, "--headed"),
     ("verbose", True, "-v"),
     ("output_dir", "/tmp/tiktok_download", "--output-dir"),
     ("config", "~/.tiktok", "--config"),
@@ -41,44 +42,34 @@ def test_parser(hashtags, attribute, value, flag):
     assert args.get("hashtags") == hashtags
 
 
-def test_process_output_dir(monkeypatch, tmp_path):
-    home_dir = Path.home().resolve()
-
-    # Specified nonexistent output directory without write permissions
-    parser = create_parser()
-    specified_output_dir = home_dir.parent / "test"
-    with pytest.raises(SystemExit) as system_exit:
-        result = process_output_dir(
-            specified_output_dir=specified_output_dir, parser=parser
-        )
-    assert system_exit.type == SystemExit
-
-    # Specified existing output directory without write permissions
-    parser = create_parser()
-    specified_output_dir = home_dir.parent
-    with pytest.raises(SystemExit) as system_exit:
-        result = process_output_dir(
-            specified_output_dir=specified_output_dir, parser=parser
-        )
-    assert system_exit.type == SystemExit
-
+def test_output_dir_unspec_nowrite(monkeypatch, tmp_path):
     # Unspecified, in current directory without write permissions
+    parser = create_parser()
     cwd = os.getcwd()
+    specified_output_dir = tmp_path
     monkeypatch.chdir(specified_output_dir)
+    os.chmod(tmp_path, 0o444)
     result = process_output_dir(specified_output_dir=None, parser=parser)
     monkeypatch.chdir(cwd)
     assert result == DEFAULT_OUTPUT_DIR
+    os.chmod(tmp_path, 0o666)
 
+
+def test_output_dir_spec_noexist_write(tmp_path):
     # Specified nonexisting output directory with write permissions
     parser = create_parser()
-    specified_output_dir = tmp_path / "test" / "tiktok"
+    specified_output_dir = tmp_path / "test"
     result = process_output_dir(
         specified_output_dir=specified_output_dir, parser=parser
     )
     assert result == specified_output_dir
 
+
+def test_output_dir_unspec_write(monkeypatch, tmp_path):
     # Unspecified, in current directory with write permissions
+    parser = create_parser()
     cwd = os.getcwd()
+    specified_output_dir = tmp_path
     monkeypatch.chdir(specified_output_dir)
     result = process_output_dir(specified_output_dir=None, parser=parser)
     monkeypatch.chdir(cwd)

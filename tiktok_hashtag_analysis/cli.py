@@ -77,7 +77,11 @@ def create_parser():
         help="Increase output verbosity",
         action="store_true",
     )
-
+    parser.add_argument(
+        "--headed",
+        help="Don't use headless version of TikTok scraper",
+        action="store_true",
+    )
     return parser
 
 
@@ -99,6 +103,11 @@ def process_output_dir(
             if not os.access(path=_output_dir, mode=os.W_OK):
                 parser.error(error_message(_output_dir))
             else:
+                # On Windows, os.access is unreliable
+                temp_file = _output_dir / "test.txt"
+                with open(temp_file, "w") as f:
+                    f.write("test")
+                os.remove(temp_file)
                 return _output_dir
         except PermissionError:
             parser.error(error_message(_output_dir))
@@ -141,6 +150,7 @@ def main():
         plot=args.plot,
         table=args.table,
         number=args.number,
+        headed=args.headed,
     )
 
 

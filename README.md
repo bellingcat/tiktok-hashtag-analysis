@@ -15,7 +15,7 @@ You should now be ready to start using it.
 ## About the tool
 ### Command-line arguments
 ```
-usage: tiktok-hashtag-analysis [-h] [--file FILE] [-d] [--number NUMBER] [-p] [-t] [--output-dir OUTPUT_DIR] [--config CONFIG] [--log LOG] [--limit LIMIT] [-v] [hashtags ...]
+usage: tiktok-hashtag-analysis [-h] [--file FILE] [-d] [--number NUMBER] [-p] [-t] [--output-dir OUTPUT_DIR] [--config CONFIG] [--log LOG] [--limit LIMIT] [-v] [--headed] [hashtags ...]
 
 Analyze hashtags within posts scraped from TikTok.
 
@@ -35,6 +35,7 @@ optional arguments:
   --log LOG             File to write logs to
   --limit LIMIT         Maximum number of videos to download for each hashtag
   -v, --verbose         Increase output verbosity
+  --headed              Don't use headless version of TikTok scraper
 ```
 
 ### Structure of output data

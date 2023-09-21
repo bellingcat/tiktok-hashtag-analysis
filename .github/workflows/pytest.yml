@@ -1,0 +1,18 @@
+name: Test
+
+on: [push]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+      - run: pip install -e .[dev]
+      - run: python -m playwright install
+      - run: |
+          export DISPLAY=:99
+          sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+          pytest
