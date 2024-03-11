@@ -69,7 +69,7 @@ def create_parser():
         "--limit",
         type=int,
         help="Maximum number of videos to download for each hashtag",
-        default=1000,
+        default=35,
     )
     parser.add_argument(
         "-v",
